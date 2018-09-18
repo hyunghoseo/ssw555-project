@@ -1,4 +1,6 @@
 import sys
+from datetime import datetime, date
+from prettytable import PrettyTable
 
 # dict of level-to-tags
 tags = {"0": ["INDI","FAM","HEAD","TRLR","NOTE"],
@@ -38,7 +40,11 @@ def main(fname):
             if expectsDate:
                 expectsDate = 0
                 if tag == "DATE":
-                    entry[dateType] = args
+                    date = datetime.strptime(args, "%d %b %Y")
+                    entry[dateType] = date
+                    entry[dateType + "Str"] = date.strftime("%Y-%m-%d")
+                    if dateType == "birth":
+                        entry["age"] = get_age(date)
                     continue
                 
             if not entry.get("id"):
@@ -90,8 +96,8 @@ def main(fname):
         if type == "FAM":
             famList.append(entry)
             
-        print indiList
-        print famList
+        print_indi()
+        print_fam()
             
 
 def verify_line(tokens):
@@ -120,6 +126,41 @@ def verify_line(tokens):
 
     # print "<-- {}|{}|{}|{}".format(level,tag,valid,arguments)
     return [level,tag,valid,arguments]
+    
+def print_indi():
+    t = PrettyTable()
+    t.field_names = ["ID","Name","Gender","Birthday","Age","Alive","Death","Child","Spouse"]
+    for indi in indiList:
+        t.add_row([ indi.get("id","NA"),
+                    indi.get("name","NA"),
+                    indi.get("sex","NA"),
+                    indi.get("birthStr","NA"),
+                    indi.get("age","NA"),
+                    "False" if indi.get("death") else "True",
+                    indi.get("deathStr","NA"),
+                    indi.get("famc","None"),
+                    indi.get("fams","NA")
+                  ])
+    print "Indivudals\n", t
+                  
+def print_fam():
+    t = PrettyTable()
+    t.field_names = ["ID","Married","Divorced","Husband ID","Husband Name","Wife ID","Wife Name","Children"]
+    for fam in famList:
+        t.add_row([ fam.get("id","NA"),
+                    fam.get("marrStr","NA"),
+                    fam.get("divStr","NA"),
+                    fam.get("husb","NA"),
+                    next((indi for indi in indiList if indi['id'] == fam.get("husb")), {}).get("name"),
+                    fam.get("wife","NA"),
+                    next((indi for indi in indiList if indi['id'] == fam.get("wife")), {}).get("name"),
+                    fam.get("children","NA")
+                  ])
+    print "Families\n", t
+    
+def get_age(birth):
+    today = date.today()
+    return today.year - birth.year - ((today.month, today.day) < (birth.month, birth.day))
 
 if __name__ == "__main__":
     try:
