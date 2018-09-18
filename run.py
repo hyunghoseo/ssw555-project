@@ -65,7 +65,7 @@ def main(fname):
                     if entry.get("fams"):
                         entry["fams"].append(args)
                     else:
-                        entry["fams"] = []
+                        entry["fams"] = [args]
             elif type == "FAM":
                 if tag == "MARR":
                     expectsDate = 1
@@ -91,7 +91,7 @@ def main(fname):
             famList.append(entry)
             
         print indiList
-        print fam
+        print famList
             
 
 def verify_line(tokens):
