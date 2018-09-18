@@ -62,7 +62,10 @@ def main(fname):
                 elif tag == "FAMC":
                     entry["famc"] = args
                 elif tag == "FAMS":
-                    entry["fams"] = args
+                    if entry.get("fams"):
+                        entry["fams"].append(args)
+                    else:
+                        entry["fams"] = []
             elif type == "FAM":
                 if tag == "MARR":
                     expectsDate = 1
@@ -86,18 +89,6 @@ def main(fname):
             indiList.append(entry)
         if type == "FAM":
             famList.append(entry)
-            
-        for fam in famList:
-            husb = fam.get("husb")
-            wife = fam.get("wife")
-            children = fam.get("children")
-            
-            for indi in indiList:
-                indi["spouse"] = []
-                if indi["id"] == husb or indi["id"] == wife:
-                    indi["spouse"].append(fam["id"])
-                if indi in children:
-                    indi["child"] = fam["id"]
             
         print indiList
         print fam
