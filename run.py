@@ -72,7 +72,10 @@ def main(fname):
                 elif tag == "WIFE":
                     entry["wife"] = args
                 elif tag == "CHIL":
-                    entry["chil"] = args
+                    if entry.get("chil"):
+                        entry["chil"].append(args)
+                    else:
+                        entry["chil"] = [args]
                 elif tag == "DIV":
                     expectsDate = 1
                     dateType = "div"
