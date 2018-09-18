@@ -6,8 +6,8 @@ tags = {"0": ["INDI","FAM","HEAD","TRLR","NOTE"],
               "CHIL","DIV"],
         "2": ["DATE"]}
 
-indi = []
-fam = []
+indiList = []
+famList = []
         
 def main(fname):
     with open(fname) as f:
@@ -30,9 +30,9 @@ def main(fname):
             
             if entry and tag in ["INDI", "FAM"]:
                 if type == "INDI":
-                    indi.append(entry)
+                    indiList.append(entry)
                 elif type == "FAM":
-                    fam.append(entry)
+                    famList.append(entry)
                 entry = {}
                 
             if expectsDate:
@@ -72,10 +72,10 @@ def main(fname):
                 elif tag == "WIFE":
                     entry["wife"] = args
                 elif tag == "CHIL":
-                    if entry.get("chil"):
-                        entry["chil"].append(args)
+                    if entry.get("children"):
+                        entry["children"].append(args)
                     else:
-                        entry["chil"] = [args]
+                        entry["children"] = [args]
                 elif tag == "DIV":
                     expectsDate = 1
                     dateType = "div"
@@ -83,11 +83,23 @@ def main(fname):
                 
                     
         if type == "INDI":
-            indi.append(entry)
+            indiList.append(entry)
         if type == "FAM":
-            fam.append(entry)
+            famList.append(entry)
             
-        print indi
+        for fam in famList:
+            husb = fam.get("husb")
+            wife = fam.get("wife")
+            children = fam.get("children")
+            
+            for indi in indiList:
+                indi["spouse"] = []
+                if indi["id"] == husb or indi["id"] == wife:
+                    indi["spouse"].append(fam["id"])
+                if indi in children:
+                    indi["child"] = fam["id"]
+            
+        print indiList
         print fam
             
 
