@@ -96,8 +96,8 @@ def main(fname):
         if type == "FAM":
             famList.append(entry)
             
-        print_indi()
-        print_fam()
+        print_indi_table()
+        print_fam_table()
             
 
 def verify_line(tokens):
@@ -127,7 +127,7 @@ def verify_line(tokens):
     # print "<-- {}|{}|{}|{}".format(level,tag,valid,arguments)
     return [level,tag,valid,arguments]
     
-def print_indi():
+def print_indi_table():
     t = PrettyTable()
     t.field_names = ["ID","Name","Gender","Birthday","Age","Alive","Death","Child","Spouse"]
     for indi in indiList:
@@ -143,7 +143,7 @@ def print_indi():
                   ])
     print "Indivudals\n", t
                   
-def print_fam():
+def print_fam_table():
     t = PrettyTable()
     t.field_names = ["ID","Married","Divorced","Husband ID","Husband Name","Wife ID","Wife Name","Children"]
     for fam in famList:
@@ -151,12 +151,18 @@ def print_fam():
                     fam.get("marrStr","NA"),
                     fam.get("divStr","NA"),
                     fam.get("husb","NA"),
-                    next((indi for indi in indiList if indi['id'] == fam.get("husb")), {}).get("name"),
+                    get_indi(fam.get("husb")).get("name"),
                     fam.get("wife","NA"),
-                    next((indi for indi in indiList if indi['id'] == fam.get("wife")), {}).get("name"),
+                    get_indi(fam.get("wife")).get("name"),
                     fam.get("children","NA")
                   ])
     print "Families\n", t
+
+def get_indi(id):
+    return next((indi for indi in indiList if indi["id"] == id), {})
+
+def get_fam(id):
+    return next((fam for fam in famList if fam["id"] == id), {})
     
 def get_age(birth):
     today = date.today()
