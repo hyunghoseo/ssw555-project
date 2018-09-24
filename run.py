@@ -31,10 +31,7 @@ def main(fname):
                 continue
             
             if entry and tag in ["INDI", "FAM"]:
-                if type == "INDI":
-                    indiList.append(entry)
-                elif type == "FAM":
-                    famList.append(entry)
+                add_entry(entry, type)
                 entry = {}
                 
             if expectsDate:
@@ -43,8 +40,6 @@ def main(fname):
                     date = datetime.strptime(args, "%d %b %Y")
                     entry[dateType] = date
                     entry[dateType + "Str"] = date.strftime("%Y-%m-%d")
-                    if dateType == "birth":
-                        entry["age"] = get_age(date)
                     continue
                 
             if not entry.get("id"):
@@ -87,18 +82,35 @@ def main(fname):
                         entry["children"] = [args]
                 elif tag == "DIV":
                     expectsDate = 1
-                    dateType = "div"
-           
-                
+                    dateType = "div"    
                     
-        if type == "INDI":
-            indiList.append(entry)
-        if type == "FAM":
-            famList.append(entry)
+        add_entry(entry, type)
             
         print_indi_table()
         print_fam_table()
             
+def add_entry(entry, type):
+    if type == "INDI":
+        if entry.get("birth"):
+            if entry.get("death"):
+                age = get_age(entry["birth"], entry["death"])
+                if age < 0:
+                    print "Error: INDI {} has death date before birth date".format(entry["id"])
+                    exit(-1)
+                else:
+                    entry["age"] = age
+            else:
+                entry["age"] = get_age(entry["birth"], date.today())
+            if entry.get("marr"):
+                if get_age(entry["birth"], entry["marr"]) < 0:
+                    print "Error: INDI {} has a marriage date before birth date".format(entry["id"])
+                    exit(-1)
+        else:
+            print "Error: INDI {} is missing a birth date".format(entry["id"])
+            exit(-1)
+        indiList.append(entry)
+    if type == "FAM":
+        famList.append(entry)
 
 def verify_line(tokens):
     # print "-->", line.rstrip("\n")
@@ -164,9 +176,8 @@ def get_indi(id):
 def get_fam(id):
     return next((fam for fam in famList if fam["id"] == id), {})
     
-def get_age(birth):
-    today = date.today()
-    return today.year - birth.year - ((today.month, today.day) < (birth.month, birth.day))
+def get_age(birth, death):
+    return death.year - birth.year - ((death.month, death.day) < (birth.month, birth.day))
 
 if __name__ == "__main__":
     try:
