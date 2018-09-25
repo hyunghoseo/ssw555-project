@@ -95,19 +95,16 @@ def add_entry(entry, type):
             if entry.get("death"):
                 age = get_age(entry["birth"], entry["death"])
                 if age < 0:
-                    print "Error: INDI {} has death date before birth date".format(entry["id"])
-                    exit(-1)
+                    raise Exception("INDI {} has death date before birth date".format(entry["id"]))
                 else:
                     entry["age"] = age
             else:
                 entry["age"] = get_age(entry["birth"], date.today())
             if entry.get("marr"):
                 if get_age(entry["birth"], entry["marr"]) < 0:
-                    print "Error: INDI {} has a marriage date before birth date".format(entry["id"])
-                    exit(-1)
+                    raise Exception ("INDI {} has a marriage date before birth date".format(entry["id"]))
         else:
-            print "Error: INDI {} is missing a birth date".format(entry["id"])
-            exit(-1)
+            raise Exception("INDI {} is missing a birth date".format(entry["id"]))
         indiList.append(entry)
     if type == "FAM":
         famList.append(entry)
