@@ -110,6 +110,9 @@ def add_entry(entry, type):
             exit(-1)
         indiList.append(entry)
     if type == "FAM":
+        if entry.get("div") and entry.get("marr") and (get_age(entry.get("marr"),entry.get("div")) < 0):
+            print "Error: FAM " + entry["id"] + " has a marriage date before birth date"
+            exit(-1)
         famList.append(entry)
 
 def verify_line(tokens):
@@ -178,6 +181,7 @@ def get_fam(id):
     
 def get_age(birth, death):
     return death.year - birth.year - ((death.month, death.day) < (birth.month, birth.day))
+
 
 if __name__ == "__main__":
     try:
