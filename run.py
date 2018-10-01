@@ -107,6 +107,14 @@ def add_entry(entry, type):
             raise Exception("INDI {} is missing a birth date".format(entry["id"]))
         indiList.append(entry)
     if type == "FAM":
+        if entry.get("div") and entry.get("marr") and (get_age(entry.get("marr"),entry.get("div")) < 0):
+            print "Error: FAM " + entry["id"] + ": marriage occurred after divorce"
+        if entry.get("marr") and entry.get("husb") and entry.get("wife"):
+            husb = get_indi(entry['husb'])
+            wif = get_indi(entry['wife'])
+            if (husb.get("death") and get_age(entry.get("marr"),husb["death"]) < 0) or (wif.get("death") and get_age(entry.get("marr"),wif["death"]) < 0):
+                print "Error: FAM " + entry["id"] + ": marriage occurred after death of one of the spouses"
+
         famList.append(entry)
 
 def verify_line(tokens):
@@ -175,6 +183,7 @@ def get_fam(id):
     
 def get_age(birth, death):
     return death.year - birth.year - ((death.month, death.day) < (birth.month, birth.day))
+
 
 if __name__ == "__main__":
     try:
