@@ -112,6 +112,10 @@ def add_entry(entry, type):
         if entry.get("marr") and entry.get("husb") and entry.get("wife"):
             husb = get_indi(entry['husb'])
             wif = get_indi(entry['wife'])
+            if (husb.get("gender") != "M"):
+                print "Error: FAM " + entry["id"] + ": Husband is not male"
+            if (wif.get("gender") != "F"):
+                print "Error: FAM " + entry["id"] + ": Wife is not female"
             if (husb.get("death") and get_age(entry.get("marr"),husb["death"]) < 0) or (wif.get("death") and get_age(entry.get("marr"),wif["death"]) < 0):
                 print "Error: FAM " + entry["id"] + ": marriage occurred after death of one of the spouses"
 
