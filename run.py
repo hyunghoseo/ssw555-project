@@ -111,8 +111,13 @@ def add_entry(entry, type):
         indiList.append(entry)
     if type == "FAM":
         if entry.get("div") and entry.get("marr") and (get_age(entry.get("marr"),entry.get("div")) < 0):
-            print "Error: FAM " + entry["id"] + " has a marriage date before birth date"
-            exit(-1)
+            print "Error: FAM " + entry["id"] + ": marriage occurred after divorce"
+        if entry.get("marr") and entry.get("husb") and entry.get("wife"):
+            husb = get_indi(entry['husb'])
+            wif = get_indi(entry['wife'])
+            if (husb.get("death") and get_age(entry.get("marr"),husb["death"]) < 0) or (wif.get("death") and get_age(entry.get("marr"),wif["death"]) < 0):
+                print "Error: FAM " + entry["id"] + ": marriage occurred after death of one of the spouses"
+
         famList.append(entry)
 
 def verify_line(tokens):
