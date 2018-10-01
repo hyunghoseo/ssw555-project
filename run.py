@@ -89,6 +89,7 @@ def main(fname):
         check_parents_age_valid()
 
         print_list_single()
+        print_list_deceased()
             
         print_indi_table()
         print_fam_table()
@@ -216,8 +217,15 @@ def print_list_single():
     temp_list = []
     for indi in indiList:
         if(indi.get("age")>30 and indi.get("death")==None and indi.get("fams")==None):
-            temp_list.append(indi.get("name"))
+            temp_list.append(indi.get("id"))
     print "List of living, single people over 30 who haven't been married: " + ', '.join(temp_list)
+
+def print_list_deceased():
+    temp_list = []
+    for indi in indiList:
+        if(indi.get("death")):
+            temp_list.append(indi.get("id"))
+    print "List of deceased people: " + ', '.join(temp_list)
 
 def get_indi(id):
     return next((indi for indi in indiList if indi["id"] == id), {})
