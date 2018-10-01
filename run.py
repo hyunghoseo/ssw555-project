@@ -95,19 +95,16 @@ def add_entry(entry, type):
             if entry.get("death"):
                 age = get_age(entry["birth"], entry["death"])
                 if age < 0:
-                    print "Error: INDI {} has death date before birth date".format(entry["id"])
-                    exit(-1)
+                    raise Exception("INDI {} has death date before birth date".format(entry["id"]))
                 else:
                     entry["age"] = age
             else:
                 entry["age"] = get_age(entry["birth"], date.today())
             if entry.get("marr"):
                 if get_age(entry["birth"], entry["marr"]) < 0:
-                    print "Error: INDI {} has a marriage date before birth date".format(entry["id"])
-                    exit(-1)
+                    raise Exception ("INDI {} has a marriage date before birth date".format(entry["id"]))
         else:
-            print "Error: INDI {} is missing a birth date".format(entry["id"])
-            exit(-1)
+            raise Exception("INDI {} is missing a birth date".format(entry["id"]))
         indiList.append(entry)
     if type == "FAM":
         if entry.get("div") and entry.get("marr") and (get_age(entry.get("marr"),entry.get("div")) < 0):
@@ -115,6 +112,10 @@ def add_entry(entry, type):
         if entry.get("marr") and entry.get("husb") and entry.get("wife"):
             husb = get_indi(entry['husb'])
             wif = get_indi(entry['wife'])
+            if (husb.get("gender") != "M"):
+                print "Error: FAM " + entry["id"] + ": Husband is not male"
+            if (wif.get("gender") != "F"):
+                print "Error: FAM " + entry["id"] + ": Wife is not female"
             if (husb.get("death") and get_age(entry.get("marr"),husb["death"]) < 0) or (wif.get("death") and get_age(entry.get("marr"),wif["death"]) < 0):
                 print "Error: FAM " + entry["id"] + ": marriage occurred after death of one of the spouses"
 
