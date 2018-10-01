@@ -85,10 +85,14 @@ def main(fname):
                     dateType = "div"    
                     
         add_entry(entry, type)
+
+        check_parents_age_valid()
+
+        print_list_single()
             
         print_indi_table()
         print_fam_table()
-            
+
 def add_entry(entry, type):
     if type == "INDI":
         if entry.get("birth"):
@@ -111,6 +115,35 @@ def add_entry(entry, type):
         indiList.append(entry)
     if type == "FAM":
         famList.append(entry)
+
+def check_parents_age_valid():
+    for fam in famList:
+        if fam.get("children"):
+            counter = 0
+            childrenIdList = fam.get("children")
+            fatherId = fam.get("husb")
+            motherId = fam.get("wife")
+            for indi in indiList:
+                if fatherId == indi.get("id"):
+                    fatherAge = indi.get("age")
+                elif motherId == indi.get("id"):
+                    motherAge = indi.get("age")
+            for x in range(counter,len(childrenIdList)):
+                for child in indiList:
+                    if childrenIdList[counter] == child.get("id"):
+                        if fatherAge - child.get("age") >= 80 and motherAge - child.get("age") >= 60:
+                            raise Exception("Error: INDI's {} Father and Mother are over their respective age limits".format(child["id"]))
+                        elif motherAge - child.get("age") >= 60:
+                            raise Exception("Error: INDI's {} Mother is 60 years or older than him/her".format(child["id"]))
+                        elif fatherAge - child.get("age") >= 80:
+                            raise Exception("Error: INDI's {} Father is 80 years or older than him/her".format(child["id"]))
+                counter += 1
+
+
+
+
+
+
 
 def verify_line(tokens):
     # print "-->", line.rstrip("\n")
@@ -169,6 +202,13 @@ def print_fam_table():
                     fam.get("children","NA")
                   ])
     print "Families\n", t
+
+def print_list_single():
+    temp_list = []
+    for indi in indiList:
+        if(indi.get("age")>30 and indi.get("death")==None and indi.get("fams")==None):
+            temp_list.append(indi.get("name"))
+    print "List of living, single people over 30 who haven't been married: " + ', '.join(temp_list)
 
 def get_indi(id):
     return next((indi for indi in indiList if indi["id"] == id), {})
