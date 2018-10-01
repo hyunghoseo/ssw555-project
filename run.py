@@ -100,16 +100,16 @@ def add_entry(entry, type):
             if entry.get("death"):
                 age = get_age(entry["birth"], entry["death"])
                 if age < 0:
-                    raise Exception("INDI {} has death date before birth date".format(entry["id"]))
+                    print "INDI {} has death date before birth date".format(entry["id"])
                 else:
                     entry["age"] = age
             else:
                 entry["age"] = get_age(entry["birth"], date.today())
             if entry.get("marr"):
                 if get_age(entry["birth"], entry["marr"]) < 0:
-                    raise Exception ("INDI {} has a marriage date before birth date".format(entry["id"]))
+                    print "INDI {} has a marriage date before birth date".format(entry["id"])
         else:
-            raise Exception("INDI {} is missing a birth date".format(entry["id"]))
+            print "INDI {} is missing a birth date".format(entry["id"])
         indiList.append(entry)
     if type == "FAM":
         if entry.get("div") and entry.get("marr") and (get_age(entry.get("marr"),entry.get("div")) < 0):
@@ -142,11 +142,11 @@ def check_parents_age_valid():
                 for child in indiList:
                     if childrenIdList[counter] == child.get("id"):
                         if fatherAge - child.get("age") >= 80 and motherAge - child.get("age") >= 60:
-                            raise Exception("Error: INDI's {} Father and Mother are over their respective age limits".format(child["id"]))
+                            print "Error: INDI's {} Father and Mother are over their respective age limits".format(child["id"])
                         elif motherAge - child.get("age") >= 60:
-                            raise Exception("Error: INDI's {} Mother is 60 years or older than him/her".format(child["id"]))
+                            print "Error: INDI's {} Mother is 60 years or older than him/her".format(child["id"])
                         elif fatherAge - child.get("age") >= 80:
-                            raise Exception("Error: INDI's {} Father is 80 years or older than him/her".format(child["id"]))
+                            print "Error: INDI's {} Father is 80 years or older than him/her".format(child["id"])
                 counter += 1
 
 
