@@ -100,29 +100,31 @@ def add_entry(entry, type):
             if entry.get("death"):
                 age = get_age(entry["birth"], entry["death"])
                 if age < 0:
-                    print "INDI {} has death date before birth date".format(entry["id"])
+                    print("Error: INDI {} has death date before birth date".format(entry["id"]))
                 else:
                     entry["age"] = age
             else:
                 entry["age"] = get_age(entry["birth"], date.today())
-            if entry.get("marr"):
-                if get_age(entry["birth"], entry["marr"]) < 0:
-                    print "INDI {} has a marriage date before birth date".format(entry["id"])
+            famId = entry.get("fams")
+            if famId and get_fam(famId):
+                fam = get_fam(famId)
+                if get_age(entry["birth"], fam["marr"]) < 0:
+                    print "Error: INDI {} has marriage date before birth date".format(entry["id"])
         else:
-            print "INDI {} is missing a birth date".format(entry["id"])
+            print "Error: INDI {} is missing a birth date".format(entry["id"])
         indiList.append(entry)
     if type == "FAM":
         if entry.get("div") and entry.get("marr") and (get_age(entry.get("marr"),entry.get("div")) < 0):
-            print "Error: FAM " + entry["id"] + ": marriage occurred after divorce"
+            print "Error: FAM {} has marriage date occurred after divorce date".format(entry["id"])
         if entry.get("marr") and entry.get("husb") and entry.get("wife"):
             husb = get_indi(entry['husb'])
             wif = get_indi(entry['wife'])
             if (husb.get("sex") != "M"):
-                print "Error: FAM " + entry["id"] + ": Husband is not male"
+                print "Error: FAM {} has husband that is not male".format(entry["id"])
             if (wif.get("sex") != "F"):
-                print "Error: FAM " + entry["id"] + ": Wife is not female"
+                print "Error: FAM {} has wife that is not female".format(entry["id"])
             if (husb.get("death") and get_age(entry.get("marr"),husb["death"]) < 0) or (wif.get("death") and get_age(entry.get("marr"),wif["death"]) < 0):
-                print "Error: FAM " + entry["id"] + ": marriage occurred after death of one of the spouses"
+                print "Error: FAM {} has marriage after death date of one of the spouses".format(entry["id"])
 
         famList.append(entry)
 
@@ -130,30 +132,19 @@ def check_parents_age_valid():
     for fam in famList:
         if fam.get("children"):
             counter = 0
-            childrenIdList = fam.get("children")
+            childIdList = fam.get("children")
             fatherId = fam.get("husb")
             motherId = fam.get("wife")
-            for indi in indiList:
-                if fatherId == indi.get("id"):
-                    fatherAge = indi.get("age")
-                elif motherId == indi.get("id"):
-                    motherAge = indi.get("age")
-            for x in range(counter,len(childrenIdList)):
-                for child in indiList:
-                    if childrenIdList[counter] == child.get("id"):
-                        if fatherAge - child.get("age") >= 80 and motherAge - child.get("age") >= 60:
-                            print "Error: INDI's {} Father and Mother are over their respective age limits".format(child["id"])
-                        elif motherAge - child.get("age") >= 60:
-                            print "Error: INDI's {} Mother is 60 years or older than him/her".format(child["id"])
-                        elif fatherAge - child.get("age") >= 80:
-                            print "Error: INDI's {} Father is 80 years or older than him/her".format(child["id"])
-                counter += 1
-
-
-
-
-
-
+            father = get_indi(fatherId)
+            mother = get_indi(motherId)
+            for childId in childIdList:
+                child = get_indi(childId)
+                if father.get("age") - child.get("age") >= 80 and mother.get("age") - child.get("age") >= 60:
+                    print "Error: INDI's {} Father and Mother are over their respective age limits".format(child["id"])
+                elif mother.get("age") - child.get("age") >= 60:
+                    print "Error: INDI's {} Mother is 60 years or older than him/her".format(child["id"])
+                elif father.get("age") - child.get("age") >= 80:
+                    print "Error: INDI's {} Father is 80 years or older than him/her".format(child["id"])
 
 def verify_line(tokens):
     # print "-->", line.rstrip("\n")
