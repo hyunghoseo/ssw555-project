@@ -86,6 +86,7 @@ def main(fname):
                     
         add_entry(entry, type)
 
+        check_birth_before_marr()
         check_parents_age_valid()
 
         print_list_single()
@@ -105,11 +106,6 @@ def add_entry(entry, type):
                     entry["age"] = age
             else:
                 entry["age"] = get_age(entry["birth"], date.today())
-            famId = entry.get("fams")
-            if famId and get_fam(famId):
-                fam = get_fam(famId)
-                if get_age(entry["birth"], fam["marr"]) < 0:
-                    print "Error: INDI {} has marriage date before birth date".format(entry["id"])
         else:
             print "Error: INDI {} is missing a birth date".format(entry["id"])
         indiList.append(entry)
@@ -131,7 +127,6 @@ def add_entry(entry, type):
 def check_parents_age_valid():
     for fam in famList:
         if fam.get("children"):
-            counter = 0
             childIdList = fam.get("children")
             fatherId = fam.get("husb")
             motherId = fam.get("wife")
@@ -145,6 +140,14 @@ def check_parents_age_valid():
                     print "Error: INDI's {} Mother is 60 years or older than him/her".format(child["id"])
                 elif father.get("age") - child.get("age") >= 80:
                     print "Error: INDI's {} Father is 80 years or older than him/her".format(child["id"])
+
+def check_birth_before_marr():
+    for entry in indiList:
+        famId = entry.get("fams")
+        if famId and get_fam(famId):
+            fam = get_fam(famId)
+            if get_age(entry["birth"], fam["marr"]) < 0:
+                print "Error: INDI {} has marriage date before birth date".format(entry["id"])
 
 def verify_line(tokens):
     # print "-->", line.rstrip("\n")
