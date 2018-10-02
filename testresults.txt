@@ -1,0 +1,37 @@
+Error: INDI @I10@ has death date before birth date
+Error: FAM @F2@ has marriage date occurred after divorce date
+Error: FAM @F5@ has marriage after death date of one of the spouses
+Error: INDI @I9@ has marriage date before birth date
+Error: INDI's @I11@ Mother is 60 years or older than him/her
+List of living, single people over 30 who haven't been married: @I14@
+List of deceased people: @I2@, @I10@, @I12@
+Indivudals
++-------+---------------------+--------+------------+-----+-------+------------+-------+------------------+
+|   ID  |         Name        | Gender |  Birthday  | Age | Alive |   Death    | Child |      Spouse      |
++-------+---------------------+--------+------------+-----+-------+------------+-------+------------------+
+|  @I1@ |     John /Smith/    |   M    | 1998-01-10 |  20 |  True |     NA     |  @F1@ |        NA        |
+|  @I2@ |     Carl /Smith/    |   M    | 1971-06-11 |  34 | False | 2005-09-03 |  @F2@ |     ['@F1@']     |
+|  @I3@ |   Wendy /Anderson/  |   F    | 1950-04-06 |  68 |  True |     NA     |  @F4@ | ['@F1@', '@F3@'] |
+|  @I4@ |  Connor /Thompson/  |   M    | 1938-05-09 |  80 |  True |     NA     |  @F5@ |     ['@F3@']     |
+|  @I5@ |   Kevin /Anderson/  |   M    | 1945-04-11 |  73 |  True |     NA     |  None |     ['@F4@']     |
+|  @I6@ |   Danielle /Jones/  |   F    | 1945-10-05 |  72 |  True |     NA     |  None |     ['@F4@']     |
+|  @I7@ |    David /Smith/    |   M    | 1939-07-06 |  79 |  True |     NA     |  None |     ['@F2@']     |
+|  @I8@ |     Sara /Lewis/    |   F    | 1938-12-16 |  79 |  True |     NA     |  None | ['@F2@', '@F6@'] |
+|  @I9@ |   Daryl /Peterson/  |   M    | 1998-04-02 |  20 |  True |     NA     |  None |     ['@F6@']     |
+| @I10@ | Samantha /Thompson/ |   F    | 2016-04-15 |  NA | False | 2015-01-03 |  @F3@ |        NA        |
+| @I11@ |   Julia /Thompson/  |   F    | 2016-04-15 |  2  |  True |     NA     |  @F3@ |        NA        |
+| @I12@ |  Thomas /Thompson/  |   M    | 1940-07-08 |  19 | False | 1960-03-04 |  None |     ['@F5@']     |
+| @I13@ |   Allison /Miller/  |   F    | 1940-11-08 |  77 |  True |     NA     |  None |     ['@F5@']     |
+| @I14@ |   James /Thompson/  |   M    | 1966-02-01 |  52 |  True |     NA     |  @F5@ |        NA        |
++-------+---------------------+--------+------------+-----+-------+------------+-------+------------------+
+Families
++------+------------+------------+------------+-------------------+---------+------------------+--------------------+
+|  ID  |  Married   |  Divorced  | Husband ID |    Husband Name   | Wife ID |    Wife Name     |      Children      |
++------+------------+------------+------------+-------------------+---------+------------------+--------------------+
+| @F1@ | 1996-04-10 |     NA     |    @I2@    |    Carl /Smith/   |   @I3@  | Wendy /Anderson/ |      ['@I1@']      |
+| @F2@ | 1969-09-09 | 1950-08-15 |    @I7@    |   David /Smith/   |   @I8@  |   Sara /Lewis/   |      ['@I2@']      |
+| @F3@ | 2010-06-13 |     NA     |    @I4@    | Connor /Thompson/ |   @I3@  | Wendy /Anderson/ | ['@I10@', '@I11@'] |
+| @F4@ | 1967-03-28 |     NA     |    @I5@    |  Kevin /Anderson/ |   @I6@  | Danielle /Jones/ |      ['@I3@']      |
+| @F5@ | 1964-10-31 |     NA     |   @I12@    | Thomas /Thompson/ |  @I13@  | Allison /Miller/ | ['@I4@', '@I14@']  |
+| @F6@ | 1981-10-01 |     NA     |    @I9@    |  Daryl /Peterson/ |   @I8@  |   Sara /Lewis/   |         NA         |
++------+------------+------------+------------+-------------------+---------+------------------+--------------------+
