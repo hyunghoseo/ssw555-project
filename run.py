@@ -18,8 +18,6 @@ def main(fname):
         expectsDate = 0
         dateType = "" # birth, death, marr, div
         for i, line in enumerate(f):
-            print i, line
-            break
             tokens = line.split()
             if len(tokens) == 0:
                 continue
@@ -105,7 +103,6 @@ def add_entry(entry, type):
             if entry.get("death"):
                 age = get_age(entry["birth"], entry["death"])
                 if age < 0:
-                    print(entry)
                     print "Line {line} Error: INDI {id} has death date before birth date".format(**entry)
                 else:
                     entry["age"] = age
