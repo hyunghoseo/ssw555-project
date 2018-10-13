@@ -18,6 +18,8 @@ def main(fname):
         expectsDate = 0
         dateType = "" # birth, death, marr, div
         for i, line in enumerate(f):
+            print i, line
+            break
             tokens = line.split()
             if len(tokens) == 0:
                 continue
@@ -30,7 +32,7 @@ def main(fname):
             if tag in ["NOTE", "HEAD", "TRLR"]:
                 continue
             
-            entry["line"] = i
+            entry["line"] = i - 1
             
             if entry and tag in ["INDI", "FAM"]:
                 add_entry(entry, type)
@@ -103,26 +105,27 @@ def add_entry(entry, type):
             if entry.get("death"):
                 age = get_age(entry["birth"], entry["death"])
                 if age < 0:
-                    print "Line {} Error: INDI {} has death date before birth date".format(entry["line"], entry["id"])
+                    print(entry)
+                    print "Line {line} Error: INDI {id} has death date before birth date".format(**entry)
                 else:
                     entry["age"] = age
             else:
                 entry["age"] = get_age(entry["birth"], date.today())
         else:
-            print "Line {} Error: INDI {} is missing a birth date".format(entry["line"], entry["id"])
+            print "Line {line} Error: INDI {id} is missing a birth date".format(**entry)
         indiList.append(entry)
     if type == "FAM":
         if entry.get("div") and entry.get("marr") and (get_age(entry.get("marr"),entry.get("div")) < 0):
-            print "Line {} Error: FAM {} has marriage date occurred after divorce date".format(entry["line"], entry["id"])
+            print "Line {line} Error: FAM {id} has marriage date occurred after divorce date".format(**entry)
         if entry.get("marr") and entry.get("husb") and entry.get("wife"):
             husb = get_indi(entry['husb'])
             wif = get_indi(entry['wife'])
             if (husb.get("sex") != "M"):
-                print "Line {} Error: FAM {} has husband that is not male".format(entry["line"], entry["id"])
+                print "Line {line} Error: FAM {id} has husband that is not male".format(**entry)
             if (wif.get("sex") != "F"):
-                print "Line {} Error: FAM {} has wife that is not female".format(entry["line"], entry["id"])
+                print "Line {line} Error: FAM {id} has wife that is not female".format(**entry)
             if (husb.get("death") and get_age(entry.get("marr"),husb["death"]) < 0) or (wif.get("death") and get_age(entry.get("marr"),wif["death"]) < 0):
-                print "Line {} Error: FAM {} has marriage after death date of one of the spouses".format(entry["line"], entry["id"])
+                print "Line {line} Error: FAM {id} has marriage after death date of one of the spouses".format(**entry)
 
         famList.append(entry)
 
@@ -137,9 +140,9 @@ def check_parents_age_valid():
             for childId in childIdList:
                 child = get_indi(childId)
                 if mother.get("age") and child.get("age") and mother["age"] - child["age"] >= 60:
-                    print "Line {} Error: INDI's {} Mother is 60 years or older than him/her".format(child["line"], child["id"])
+                    print "Line {line} Error: INDI's {id} Mother is 60 years or older than him/her".format(**child)
                 if father.get("age") and child.get("age") and father["age"] - child["age"] >= 80:
-                    print "Line {} Error: INDI's {} Father is 80 years or older than him/her".format(child["line"], child["id"])
+                    print "Line {line} Error: INDI's {id} Father is 80 years or older than him/her".format(**child)
 
 def check_birth_before_marr():
     for entry in indiList:
@@ -148,7 +151,7 @@ def check_birth_before_marr():
             for famId in famIdList:
                 fam = get_fam(famId)
                 if get_age(entry["birth"], fam["marr"]) < 0:
-                    print "Line {} Error: INDI {} has marriage date before birth date".format(entry["line"], entry["id"])
+                    print "Line {line} Error: INDI {id} has marriage date before birth date".format(**entry)
 
 def verify_line(tokens):
     # print "-->", line.rstrip("\n")
@@ -174,7 +177,7 @@ def verify_line(tokens):
     if tag not in tags.get(level,[]):
         valid = "N"
 
-    # print "<-- {}|{}|{}|{}".format(level,tag,valid,arguments)
+    # print "<-- {}|{}|{}|{}".format(**level,tag,valid,arguments)
     return [level,tag,valid,arguments]
     
 def print_indi_table():
