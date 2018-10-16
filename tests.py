@@ -207,7 +207,7 @@ class US12Test(unittest.TestCase):
             run.add_entry(wife_entry, "INDI")
             run.add_entry(child_entry, "INDI")
             run.add_entry(fam_entry, "FAM")
-            run.check_parents_age_valid()
+            run.US12_check_parents_age_valid()
         output = out.getvalue().strip()
         self.assertEquals("", output)
         
@@ -221,7 +221,7 @@ class US12Test(unittest.TestCase):
             run.add_entry(wife_entry, "INDI")
             run.add_entry(child_entry, "INDI")
             run.add_entry(fam_entry, "FAM")
-            run.check_parents_age_valid()
+            run.US12_check_parents_age_valid()
         output = out.getvalue().strip()
         self.assertIn("INDI's i06 Mother is 60 years or older than him/her", output)
         self.assertIn("INDI's i06 Father is 80 years or older than him/her", output)
@@ -236,7 +236,7 @@ class US12Test(unittest.TestCase):
             run.add_entry(wife_entry, "INDI")
             run.add_entry(child_entry, "INDI")
             run.add_entry(fam_entry, "FAM")
-            run.check_parents_age_valid()
+            run.US12_check_parents_age_valid()
         output = out.getvalue().strip()
         self.assertIn("INDI's i09 Father is 80 years or older than him/her", output)
         
@@ -250,30 +250,94 @@ class US12Test(unittest.TestCase):
             run.add_entry(wife_entry, "INDI")
             run.add_entry(child_entry, "INDI")
             run.add_entry(fam_entry, "FAM")
-            run.check_parents_age_valid()
+            run.US12_check_parents_age_valid()
         output = out.getvalue().strip()
         self.assertIn("INDI's i12 Mother is 60 years or older than him/her", output)
+        
+# List Deceased
+class US29Test(unittest.TestCase):
+    def setUp(self):
+        run.indiList = []
+        run.famList = []
+
+    def test_list_single(self):
+        entry1 = {"id": "i01", "name": "John /Smith/", "birth": date(1986, 9, 9), "sex": "M"}
+        entry2 = {"id": "i02", "name": "Kevin /Anderson/", "birth": date(1999, 9, 9), "sex": "M"}
+        entry3 = {"id": "i03", "name": "Connor /Thompson/", "birth": date(1939, 2, 23), "sex": "M", "fams": ["f01"], "death": date(2014, 3, 2)}
+        entry4 = {"id": "i04", "name": "Wendy /Anderson/", "birth": date(2009, 11, 30), "sex": "F", "death": date(2015, 3, 2)}
+        entry5 = {"id": "i05", "name": "Danielle /Jones/", "birth": date(1950, 1, 13), "sex": "F"}
+        with captured_output() as (out, err):
+            run.add_entry(entry1, "INDI")
+            run.add_entry(entry2, "INDI")
+            run.add_entry(entry3, "INDI")
+            run.add_entry(entry4, "INDI")
+            run.add_entry(entry5, "INDI")
+            run.US29_print_list_deceased()
+        output = out.getvalue().strip()
+        self.assertEquals("List of deceased people: i03 Connor /Thompson/, i04 Wendy /Anderson/", output)
+
+# List Married
+class US30Test(unittest.TestCase):
+    def setUp(self):
+        run.indiList = []
+        run.famList = []
+
+    def test_list_married_both_alive(self):
+        husb_entry = {"id": "i05", "name": "John /Smith/", "birth": date(1980,5,20), "fams": ["f03"], "sex": "M"}
+        wife_entry = {"id": "i06", "name": "Wendy /Anderson/", "birth": date(1982,6,10), "fams": ["f03"], "sex": "F"}
+        fam_entry = {"id": "f03", "husb": "i05", "wife": "i06", "marr": date(1998,6,20)}
+        with captured_output() as (out,err):
+            run.add_entry(husb_entry, "INDI")
+            run.add_entry(wife_entry, "INDI")
+            run.add_entry(fam_entry, "FAM")
+            run.US30_print_list_living_married()
+        output = out.getvalue().strip()
+        self.assertEquals("List of living, married people: i05 John /Smith/, i06 Wendy /Anderson/", output)
+
+    def test_list_married_husb_dead(self):
+        husb_entry = {"id": "i05", "name": "John /Smith/", "birth": date(1980,5,20), "death": date(1999,3,4), "fams": ["f03"], "sex": "M"}
+        wife_entry = {"id": "i06", "name": "Wendy /Anderson/", "birth": date(1982,6,10), "fams": ["f03"], "sex": "F"}
+        fam_entry = {"id": "f03", "husb": "i05", "wife": "i06", "marr": date(1998,6,20)}
+        with captured_output() as (out,err):
+            run.add_entry(husb_entry, "INDI")
+            run.add_entry(wife_entry, "INDI")
+            run.add_entry(fam_entry, "FAM")
+            run.US30_print_list_living_married()
+        output = out.getvalue().strip()
+        self.assertEquals("There are no living, married individuals", output)
+
+    def test_list_married_divorce(self):
+        husb_entry = {"id": "i05", "name": "John /Smith/", "birth": date(1980,5,20), "death": date(1999,3,4), "fams": ["f03"], "sex": "M"}
+        wife_entry = {"id": "i06", "name": "Wendy /Anderson/", "birth": date(1982,6,10), "fams": ["f03"], "sex": "F"}
+        fam_entry = {"id": "f03", "husb": "i05", "wife": "i06", "marr": date(1998,6,20), "div": date(1999,3,4)}
+        with captured_output() as (out,err):
+            run.add_entry(husb_entry, "INDI")
+            run.add_entry(wife_entry, "INDI")
+            run.add_entry(fam_entry, "FAM")
+            run.US30_print_list_living_married()
+        output = out.getvalue().strip()
+        self.assertEquals("There are no living, married individuals", output)
 
 # List living single
 class US31Test(unittest.TestCase):
     def setUp(self):
         run.indiList = []
         run.famList = []
-        
+
     def test_list_single(self):
-        entry1 = {"line": 1, "id": "i01", "birth": date(1986,9,9), "sex": "M"}
-        entry2 = {"line": 2, "id": "i02", "birth": date(1999,9,9), "sex": "M"}
-        entry3 = {"line": 3, "id": "i03", "birth": date(1939,2,23), "sex": "M", "fams": ["f01"]}
-        entry4 = {"line": 4, "id": "i04", "birth": date(2009,11,30), "sex": "F", "death": date(2015,3,2)}
-        entry5 = {"line": 5, "id": "i05", "birth": date(1950,1,13), "sex": "F"}
-        with captured_output() as (out,err):
+        entry1 = {"id": "i01", "name": "John /Smith/", "birth": date(1986, 9, 9), "sex": "M"}
+        entry2 = {"id": "i02", "name": "Kevin /Anderson/", "birth": date(1999, 9, 9), "sex": "M"}
+        entry3 = {"id": "i03", "name": "Connor /Thompson/", "birth": date(1939, 2, 23), "sex": "M", "fams": ["f01"]}
+        entry4 = {"id": "i04", "name": "Wendy /Anderson/", "birth": date(2009, 11, 30), "sex": "F", "death": date(2015, 3, 2)}
+        entry5 = {"id": "i05", "name": "Danielle /Jones/", "birth": date(1950, 1, 13), "sex": "F"}
+        with captured_output() as (out, err):
             run.add_entry(entry1, "INDI")
             run.add_entry(entry2, "INDI")
             run.add_entry(entry3, "INDI")
             run.add_entry(entry4, "INDI")
             run.add_entry(entry5, "INDI")
-            run.print_list_single()
+            run.US31_print_list_single()
         output = out.getvalue().strip()
-        self.assertEquals("List of living, single people over 30 who haven't been married: i01, i05", output)
+        self.assertEquals("List of living, single people over 30 who have never been married: i01 John /Smith/, i05 Danielle /Jones/", output)
 
 unittest.main()

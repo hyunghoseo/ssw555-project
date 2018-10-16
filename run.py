@@ -84,15 +84,16 @@ def main(fname):
                         entry["children"] = [args]
                 elif tag == "DIV":
                     expectsDate = 1
-                    dateType = "div"    
+                    dateType = "div"
                     
         add_entry(entry, type)
 
         check_birth_before_marr()
-        check_parents_age_valid()
+        US12_check_parents_age_valid()
 
-        print_list_single()
-        print_list_deceased()
+        US31_print_list_single()
+        US29_print_list_deceased()
+        US30_print_list_living_married()
             
         print_indi_table()
         print_fam_table()
@@ -126,7 +127,7 @@ def add_entry(entry, type):
 
         famList.append(entry)
 
-def check_parents_age_valid():
+def US12_check_parents_age_valid():
     for fam in famList:
         if fam.get("children"):
             childIdList = fam.get("children")
@@ -208,19 +209,49 @@ def print_fam_table():
                   ])
     print "Families\n", t
 
-def print_list_single():
-    temp_list = []
-    for indi in indiList:
-        if(indi.get("age")>30 and indi.get("death")==None and indi.get("fams")==None):
-            temp_list.append(indi.get("id"))
-    print "List of living, single people over 30 who haven't been married: " + ', '.join(temp_list)
+def US29_print_list_deceased():
+    list_of_deceased = get_list('deceased')
+    if list_of_deceased:
+        print "List of deceased people: " + ', '.join(list_of_deceased)
+    else:
+        print "There are no deceased individuals"
 
-def print_list_deceased():
-    temp_list = []
-    for indi in indiList:
-        if(indi.get("death")):
-            temp_list.append(indi.get("id"))
-    print "List of deceased people: " + ', '.join(temp_list)
+def US30_print_list_living_married():
+    list_of_married = get_list('married')
+    if list_of_married:
+        print "List of living, married people: " + ', '.join(list_of_married)
+    else:
+        print "There are no living, married individuals"
+
+def US31_print_list_single():
+    list_of_singles = get_list('single')
+    if list_of_singles:
+        print "List of living, single people over 30 who have never been married: " + ', '.join(list_of_singles)
+    else:
+        print "There are no living, single people over 30"
+
+def get_list(type):
+    list_of_people = []
+    if type == 'single':
+        for indi in indiList:
+            if indi.get("age") > 30 and indi.get("death") is None and indi.get("fams") is None:
+                id_and_name = indi.get("id") + " " + indi.get("name")
+                list_of_people.append(id_and_name)
+    elif type == 'deceased':
+        for indi in indiList:
+            if indi.get("death"):
+                id_and_name = indi.get("id") + " " + indi.get("name")
+                list_of_people.append(id_and_name)
+    elif type == 'married':
+        for fam in famList:
+            husb = get_indi(fam['husb'])
+            wife = get_indi(fam['wife'])
+            if husb.get("death") is None and wife.get("death") is None and fam.get("div") is None:
+                id_name_husb = husb.get("id") + " " + husb.get("name")
+                id_name_wife = wife.get("id") + " " + wife.get("name")
+                list_of_people.append(id_name_husb)
+                list_of_people.append(id_name_wife)
+    return list_of_people
 
 def get_indi(id):
     return next((indi for indi in indiList if indi["id"] == id), {})
