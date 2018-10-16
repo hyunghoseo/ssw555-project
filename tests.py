@@ -340,4 +340,74 @@ class US31Test(unittest.TestCase):
         output = out.getvalue().strip()
         self.assertEquals("List of living, single people over 30 who have never been married: i01 John /Smith/, i05 Danielle /Jones/", output)
 
+   
+   
+# Correct gender for role
+class US21Test(unittest.TestCase):
+    def setUp(self):
+        run.indiList = []
+        run.famList = []
+        
+    def test_both_correct(self):
+        husb_entry = {"line": 1, "id": "i01", "birth": date(1980,5,20), "fams": ["f01"], "sex": "M"}
+        wife_entry = {"line": 2, "id": "i02", "birth": date(1982,6,10), "fams": ["f01"], "sex": "F"}
+        fam_entry = {"line": 3, "id": "f01", "husb": "i01", "wife": "i02", "marr": date(2000,6,20)}
+        with captured_output() as (out,err):
+            run.add_entry(husb_entry, "INDI")
+            run.add_entry(wife_entry, "INDI")
+            run.add_entry(fam_entry, "FAM")
+        output = out.getvalue().strip()
+        self.assertEquals("", output)
+        
+    def test_husb_not_male(self):
+        husb_entry = {"line": 4, "id": "i03", "birth": date(1980,5,20), "death": date(2017,3,4), "fams": ["f02"], "sex": "F"}
+        wife_entry = {"line": 5, "id": "i04", "birth": date(1982,6,10), "death": date(2017,3,4), "fams": ["f02"], "sex": "F"}
+        fam_entry = {"line": 6, "id": "f02", "husb": "i03", "wife": "i04", "marr": date(2000,6,20)}
+        with captured_output() as (out,err):
+            run.add_entry(husb_entry, "INDI")
+            run.add_entry(wife_entry, "INDI")
+            run.add_entry(fam_entry, "FAM")
+        output = out.getvalue().strip()
+        self.assertIn("FAM f02 has husband that is not male", output)
+        
+    def test_wife_not_female(self):
+        husb_entry = {"line": 7, "id": "i05", "birth": date(1980,5,20), "death": date(2018,3,4), "fams": ["f03"], "sex": "M"}
+        wife_entry = {"line": 8, "id": "i06", "birth": date(1982,6,10), "death": date(2017,3,4), "fams": ["f03"], "sex": "M"}
+        fam_entry = {"line": 9, "id": "f03", "husb": "i05", "wife": "i06", "marr": date(2000,6,20)}
+        with captured_output() as (out,err):
+            run.add_entry(husb_entry, "INDI")
+            run.add_entry(wife_entry, "INDI")
+            run.add_entry(fam_entry, "FAM")
+        output = out.getvalue().strip()
+        self.assertIn("FAM f03 has wife that is not female", output)
+        
+    def test_both_incorrect(self):
+        husb_entry = {"line": 10, "id": "i07", "birth": date(1980,5,20), "death": date(2017,3,4), "fams": ["f04"], "sex": "F"}
+        wife_entry = {"line": 11, "id": "i08", "birth": date(1982,6,10), "death": date(2017,3,4), "fams": ["f04"], "sex": "M"}
+        fam_entry = {"line": 12, "id": "f04", "husb": "i07", "wife": "i08", "marr": date(2000,6,20)}
+        with captured_output() as (out,err):
+            run.add_entry(husb_entry, "INDI")
+            run.add_entry(wife_entry, "INDI")
+            run.add_entry(fam_entry, "FAM")
+        output = out.getvalue().strip()
+        self.assertIn("FAM f04 has husband that is not male", output)
+        self.assertIn("FAM f04 has wife that is not female", output)  
+        
+# Include input line numbers
+class US40Test(unittest.TestCase):
+    def setUp(self):
+        run.indiList = []
+        run.famList = []
+        
+    def test_line_errors(self):
+        husb_entry = {"line": 1, "id": "i07", "birth": date(1980,5,20), "death": date(1977,3,4), "fams": ["f04"], "sex": "F"}
+        wife_entry = {"line": 2, "id": "i08", "birth": date(1982,6,10), "death": date(2017,3,4), "fams": ["f04"], "sex": "F"}
+        fam_entry = {"line": 3, "id": "f04", "husb": "i07", "wife": "i08", "marr": date(2000,6,20)}
+        with captured_output() as (out,err):
+            run.add_entry(husb_entry, "INDI")
+            run.add_entry(wife_entry, "INDI")
+            run.add_entry(fam_entry, "FAM")
+        output = out.getvalue().strip()
+        self.assertEquals("Line 1 Error: INDI i07 has death date before birth date\nLine 3 Error: FAM f04 has husband that is not male\nLine 3 Error: FAM f04 has marriage after death date of one of the spouses", output)
+
 unittest.main()
