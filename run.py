@@ -104,26 +104,26 @@ def add_entry(entry, type):
             if entry.get("death"):
                 age = get_age(entry["birth"], entry["death"])
                 if age < 0:
-                    print "Line {line} Error: INDI {id} has death date before birth date".format(**entry)
+                    print "[Line {line}] US03 Error: INDI {id} has death date before birth date".format(**entry)
                 else:
                     entry["age"] = age
             else:
                 entry["age"] = get_age(entry["birth"], date.today())
         else:
-            print "Line {line} Error: INDI {id} is missing a birth date".format(**entry)
+            print "[Line {line}] Error: INDI {id} is missing a birth date".format(**entry)
         indiList.append(entry)
     if type == "FAM":
         if entry.get("div") and entry.get("marr") and (get_age(entry.get("marr"),entry.get("div")) < 0):
-            print "Line {line} Error: FAM {id} has marriage date occurred after divorce date".format(**entry)
+            print "[Line {line}] US04 Error: FAM {id} has marriage date occurred after divorce date".format(**entry)
         if entry.get("marr") and entry.get("husb") and entry.get("wife"):
             husb = get_indi(entry['husb'])
             wif = get_indi(entry['wife'])
             if (husb.get("sex") != "M"):
-                print "Line {line} Error: FAM {id} has husband that is not male".format(**entry)
+                print "[Line {line}] US21 Error: FAM {id} has husband that is not male".format(**entry)
             if (wif.get("sex") != "F"):
-                print "Line {line} Error: FAM {id} has wife that is not female".format(**entry)
+                print "[Line {line}] US21 Error: FAM {id} has wife that is not female".format(**entry)
             if (husb.get("death") and get_age(entry.get("marr"),husb["death"]) < 0) or (wif.get("death") and get_age(entry.get("marr"),wif["death"]) < 0):
-                print "Line {line} Error: FAM {id} has marriage after death date of one of the spouses".format(**entry)
+                print "[Line {line}] US05 Error: FAM {id} has marriage after death date of one of the spouses".format(**entry)
 
         famList.append(entry)
 
@@ -138,9 +138,9 @@ def US12_check_parents_age_valid():
             for childId in childIdList:
                 child = get_indi(childId)
                 if mother.get("age") and child.get("age") and mother["age"] - child["age"] >= 60:
-                    print "Line {line} Error: INDI's {id} Mother is 60 years or older than him/her".format(**child)
+                    print "[Line {line}] US12 Error: INDI's {id} Mother is 60 years or older than him/her".format(**child)
                 if father.get("age") and child.get("age") and father["age"] - child["age"] >= 80:
-                    print "Line {line} Error: INDI's {id} Father is 80 years or older than him/her".format(**child)
+                    print "[Line {line}] US12 Error: INDI's {id} Father is 80 years or older than him/her".format(**child)
 
 def check_birth_before_marr():
     for entry in indiList:
@@ -149,7 +149,7 @@ def check_birth_before_marr():
             for famId in famIdList:
                 fam = get_fam(famId)
                 if get_age(entry["birth"], fam["marr"]) < 0:
-                    print "Line {line} Error: INDI {id} has marriage date before birth date".format(**entry)
+                    print "[Line {line}] US02 Error: INDI {id} has marriage date before birth date".format(**entry)
 
 def verify_line(tokens):
     # print "-->", line.rstrip("\n")
@@ -212,23 +212,23 @@ def print_fam_table():
 def US29_print_list_deceased():
     list_of_deceased = get_list('deceased')
     if list_of_deceased:
-        print "List of deceased people: " + ', '.join(list_of_deceased)
+        print "(US29) List of deceased people: " + ', '.join(list_of_deceased)
     else:
-        print "There are no deceased individuals"
+        print "(US29) There are no deceased individuals"
 
 def US30_print_list_living_married():
     list_of_married = get_list('married')
     if list_of_married:
-        print "List of living, married people: " + ', '.join(list_of_married)
+        print "(US30) List of living, married people: " + ', '.join(list_of_married)
     else:
-        print "There are no living, married individuals"
+        print "(US30) There are no living, married individuals"
 
 def US31_print_list_single():
     list_of_singles = get_list('single')
     if list_of_singles:
-        print "List of living, single people over 30 who have never been married: " + ', '.join(list_of_singles)
+        print "(US31) List of living, single people over 30 who have never been married: " + ', '.join(list_of_singles)
     else:
-        print "There are no living, single people over 30"
+        print "(US31) There are no living, single people over 30"
 
 def get_list(type):
     list_of_people = []

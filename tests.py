@@ -274,7 +274,7 @@ class US29Test(unittest.TestCase):
             run.add_entry(entry5, "INDI")
             run.US29_print_list_deceased()
         output = out.getvalue().strip()
-        self.assertEquals("List of deceased people: i03 Connor /Thompson/, i04 Wendy /Anderson/", output)
+        self.assertEquals("(US29) List of deceased people: i03 Connor /Thompson/, i04 Wendy /Anderson/", output)
 
 # List Married
 class US30Test(unittest.TestCase):
@@ -292,7 +292,7 @@ class US30Test(unittest.TestCase):
             run.add_entry(fam_entry, "FAM")
             run.US30_print_list_living_married()
         output = out.getvalue().strip()
-        self.assertEquals("List of living, married people: i05 John /Smith/, i06 Wendy /Anderson/", output)
+        self.assertEquals("(US30) List of living, married people: i05 John /Smith/, i06 Wendy /Anderson/", output)
 
     def test_list_married_husb_dead(self):
         husb_entry = {"id": "i05", "name": "John /Smith/", "birth": date(1980,5,20), "death": date(1999,3,4), "fams": ["f03"], "sex": "M"}
@@ -304,7 +304,7 @@ class US30Test(unittest.TestCase):
             run.add_entry(fam_entry, "FAM")
             run.US30_print_list_living_married()
         output = out.getvalue().strip()
-        self.assertEquals("There are no living, married individuals", output)
+        self.assertEquals("(US30) There are no living, married individuals", output)
 
     def test_list_married_divorce(self):
         husb_entry = {"id": "i05", "name": "John /Smith/", "birth": date(1980,5,20), "death": date(1999,3,4), "fams": ["f03"], "sex": "M"}
@@ -316,7 +316,7 @@ class US30Test(unittest.TestCase):
             run.add_entry(fam_entry, "FAM")
             run.US30_print_list_living_married()
         output = out.getvalue().strip()
-        self.assertEquals("There are no living, married individuals", output)
+        self.assertEquals("(US30) There are no living, married individuals", output)
 
 # List living single
 class US31Test(unittest.TestCase):
@@ -338,7 +338,7 @@ class US31Test(unittest.TestCase):
             run.add_entry(entry5, "INDI")
             run.US31_print_list_single()
         output = out.getvalue().strip()
-        self.assertEquals("List of living, single people over 30 who have never been married: i01 John /Smith/, i05 Danielle /Jones/", output)
+        self.assertEquals("(US31) List of living, single people over 30 who have never been married: i01 John /Smith/, i05 Danielle /Jones/", output)
 
    
    
@@ -408,6 +408,6 @@ class US40Test(unittest.TestCase):
             run.add_entry(wife_entry, "INDI")
             run.add_entry(fam_entry, "FAM")
         output = out.getvalue().strip()
-        self.assertEquals("Line 1 Error: INDI i07 has death date before birth date\nLine 3 Error: FAM f04 has husband that is not male\nLine 3 Error: FAM f04 has marriage after death date of one of the spouses", output)
+        self.assertEquals("[Line 1] US03 Error: INDI i07 has death date before birth date\n[Line 3] US21 Error: FAM f04 has husband that is not male\n[Line 3] US05 Error: FAM f04 has marriage after death date of one of the spouses", output)
 
 unittest.main()
