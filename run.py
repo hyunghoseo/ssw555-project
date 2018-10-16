@@ -30,11 +30,11 @@ def main(fname):
             if tag in ["NOTE", "HEAD", "TRLR"]:
                 continue
             
-            entry["line"] = i - 1
-            
             if entry and tag in ["INDI", "FAM"]:
                 add_entry(entry, type)
-                entry = {}
+                entry = {"line": i+1}
+            elif not entry:
+                entry = {"line": i+1}
                 
             if expectsDate:
                 expectsDate = 0
