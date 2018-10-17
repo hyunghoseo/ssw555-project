@@ -119,6 +119,7 @@ def add_entry(entry, type):
             husb = get_indi(entry['husb'])
             wif = get_indi(entry['wife'])
             us05_marrBeforeDeat(entry, husb, wif)
+            us10_marrAfter14(entry, husb, wif)
             if husb.get("sex") != "M":
                 print "[Line {line}] US21 Error: FAM {id} has husband that is not male".format(**entry)
             if wif.get("sex") != "F":
@@ -137,9 +138,18 @@ def us05_marrBeforeDeat(entry, husb, wif):
 
 
 def us07_maxAge150(entry):
-    # if (entry.get("death") and (get_age(entry.get("birth"),entry.get("death")) > 150)) or (get_age(entry.get("birth"),date.today()) > 150):
+    # if (entry.get("death") and (get_age(entry.get("birth"),entry.get("death")) > 150)) or (get_age(entry.get("birth"),date.today()) > 150): worked but overly complex
     if entry.get("age") > 150:
         print "[Line {line}] US07 Error: INDI {id} {name} is claimed to be over 150 years old".format(**entry)
+
+
+def us10_marrAfter14(entry,husb,wif):
+    if (get_age(husb.get("birth"),entry.get("marr")) < 14) and (get_age(wif.get("birth"),entry.get("marr")) < 14):
+        print "[Line {line}] US10 Error: FAM {id} marriage occurred prior to 14th birthdays of husband and wife".format(**entry)
+    elif get_age(husb.get("birth"),entry.get("marr")) < 14:
+        print "[Line {line}] US10 Error: FAM {id} marriage occurred prior to 14th birthday of husband".format(**entry)
+    elif get_age(wif.get("birth"),entry.get("marr")) < 14:
+        print "[Line {line}] US10 Error: FAM {id} marriage occurred prior to 14th birthday of wife".format(**entry)
 
 def US12_check_parents_age_valid():
     for fam in famList:

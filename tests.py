@@ -410,6 +410,7 @@ class US40Test(unittest.TestCase):
         output = out.getvalue().strip()
         self.assertEquals("[Line 1] US03 Error: INDI i07 has death date before birth date\n[Line 3] US05 Error: FAM f04 has marriage after death date of one of the spouses\n[Line 3] US21 Error: FAM f04 has husband that is not male", output)
 
+
 # Include input line numbers
 class US07Test(unittest.TestCase):
     def setUp(self):
@@ -421,6 +422,46 @@ class US07Test(unittest.TestCase):
             run.add_entry(ent, "INDI")
         output = out.getvalue().strip()
         self.assertEquals("[Line 1] US07 Error: INDI i01 test is claimed to be over 150 years old", output)
+
+
+# Include input line numbers
+class US10Test(unittest.TestCase):
+    def setUp(self):
+        run.indiList = []
+        run.famList = []
+
+    def test_both(self):
+        husb = {"line": 1, "id": "i01", "name":"husband", "birth": date(2001,12,10), "fams": ["f01"], "sex": "M"}
+        wif = {"line": 10, "id": "i02", "name":"wife", "birth": date(2000,1,10), "fams": ["f01"], "sex": "F"}
+        fam = {"line": 30, "id": "f01", "husb": "i01", "wife": "i02", "marr": date(2010,1,10)}
+        with captured_output() as (out,err):
+            run.add_entry(husb, "INDI")
+            run.add_entry(wif, "INDI")
+            run.add_entry(fam, "FAM")
+        output = out.getvalue().strip()
+        self.assertEquals("[Line 30] US10 Error: FAM f01 marriage occurred prior to 14th birthdays of husband and wife", output)
+
+    def test_husb(self):
+        husb = {"line": 1, "id": "i01", "name":"husband", "birth": date(2001,12,10), "fams": ["f01"], "sex": "M"}
+        wif = {"line": 10, "id": "i02", "name":"wife", "birth": date(1901,1,10), "fams": ["f01"], "sex": "F"}
+        fam = {"line": 30, "id": "f01", "husb": "i01", "wife": "i02", "marr": date(2010,1,10)}
+        with captured_output() as (out,err):
+            run.add_entry(husb, "INDI")
+            run.add_entry(wif, "INDI")
+            run.add_entry(fam, "FAM")
+        output = out.getvalue().strip()
+        self.assertEquals("[Line 30] US10 Error: FAM f01 marriage occurred prior to 14th birthday of husband", output)
+
+    def test_wif(self):
+        husb = {"line": 1, "id": "i01", "name":"husband", "birth": date(1901,12,10), "fams": ["f01"], "sex": "M"}
+        wif = {"line": 10, "id": "i02", "name":"wife", "birth": date(2000,1,10), "fams": ["f01"], "sex": "F"}
+        fam = {"line": 30, "id": "f01", "husb": "i01", "wife": "i02", "marr": date(2010,1,10)}
+        with captured_output() as (out,err):
+            run.add_entry(husb, "INDI")
+            run.add_entry(wif, "INDI")
+            run.add_entry(fam, "FAM")
+        output = out.getvalue().strip()
+        self.assertEquals("[Line 30] US10 Error: FAM f01 marriage occurred prior to 14th birthday of wife", output)
 
 
 unittest.main()
