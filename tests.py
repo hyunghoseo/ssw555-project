@@ -103,28 +103,28 @@ class US04Test(unittest.TestCase):
         run.famList = []
         
     def test_no_div(self):
-        entry = {"line": 1, "id": "f01", "marr": date(1992,5,23)}
+        entry = {"line": 1, "id": "f01", "name":"test", "marr": date(1992,5,23)}
         with captured_output() as (out,err):
             run.add_entry(entry, "FAM")
         output = out.getvalue().strip()
         self.assertEquals("", output)
         
     def test_marr_before_div(self):
-        entry = {"line": 2, "id": "f01", "marr": date(1992,5,23), "div": date(2017,3,4)}
+        entry = {"line": 2, "id": "f01", "name":"test", "marr": date(1992,5,23), "div": date(2017,3,4)}
         with captured_output() as (out,err):
             run.add_entry(entry, "FAM")
         output = out.getvalue().strip()
         self.assertEquals("", output)
         
     def test_div_before_marr(self):
-        entry = {"line": 3, "id": "f02", "marr": date(1998,3,25), "div": date(1993,4,6)}
+        entry = {"line": 3, "id": "f02", "name":"test", "marr": date(1998,3,25), "div": date(1993,4,6)}
         with captured_output() as (out,err):
             run.add_entry(entry, "FAM")
         output = out.getvalue().strip()
-        self.assertIn("FAM f02 has marriage date occurred after divorce date", output)
+        self.assertIn("[Line 3] US04 Error: FAM f02 has marriage date after divorce date", output)
         
     def test_marr_div_same(self):
-        entry = {"line": 4, "id": "f03", "marr": date.today(), "div": date.today()}
+        entry = {"line": 4, "id": "f03", "name":"test", "marr": date.today(), "div": date.today()}
         with captured_output() as (out,err):
             run.add_entry(entry, "FAM")
         output = out.getvalue().strip()
@@ -137,8 +137,8 @@ class US05Test(unittest.TestCase):
         run.famList = []
         
     def test_marr_no_death(self):
-        husb_entry = {"line": 1, "id": "i01", "birth": date(1980,5,20), "fams": ["f01"], "sex": "M"}
-        wife_entry = {"line": 2, "id": "i02", "birth": date(1982,6,10), "fams": ["f01"], "sex": "F"}
+        husb_entry = {"line": 1, "id": "i01", "name":"test", "birth": date(1980,5,20), "fams": ["f01"], "sex": "M"}
+        wife_entry = {"line": 2, "id": "i02", "name":"test", "birth": date(1982,6,10), "fams": ["f01"], "sex": "F"}
         fam_entry = {"line": 3, "id": "f01", "husb": "i01", "wife": "i02", "marr": date(2000,6,20)}
         with captured_output() as (out,err):
             run.add_entry(husb_entry, "INDI")
@@ -148,8 +148,8 @@ class US05Test(unittest.TestCase):
         self.assertEquals("", output)
         
     def test_marr_before_death(self):
-        husb_entry = {"line": 4, "id": "i03", "birth": date(1980,5,20), "death": date(2017,3,4), "fams": ["f02"], "sex": "M"}
-        wife_entry = {"line": 5, "id": "i04", "birth": date(1982,6,10), "death": date(2017,3,4), "fams": ["f02"], "sex": "F"}
+        husb_entry = {"line": 4, "id": "i03", "name":"test", "birth": date(1980,5,20), "death": date(2017,3,4), "fams": ["f02"], "sex": "M"}
+        wife_entry = {"line": 5, "id": "i04", "name":"test", "birth": date(1982,6,10), "death": date(2017,3,4), "fams": ["f02"], "sex": "F"}
         fam_entry = {"line": 6, "id": "f02", "husb": "i03", "wife": "i04", "marr": date(2000,6,20)}
         with captured_output() as (out,err):
             run.add_entry(husb_entry, "INDI")
@@ -159,8 +159,8 @@ class US05Test(unittest.TestCase):
         self.assertEquals("", output)
         
     def test_husb_death_before_marr(self):
-        husb_entry = {"line": 7, "id": "i05", "birth": date(1980,5,20), "death": date(1999,3,4), "fams": ["f03"], "sex": "M"}
-        wife_entry = {"line": 8, "id": "i06", "birth": date(1982,6,10), "death": date(2017,3,4), "fams": ["f03"], "sex": "F"}
+        husb_entry = {"line": 7, "id": "i05", "name":"test", "birth": date(1980,5,20), "death": date(1999,3,4), "fams": ["f03"], "sex": "M"}
+        wife_entry = {"line": 8, "id": "i06", "name":"test", "birth": date(1982,6,10), "death": date(2017,3,4), "fams": ["f03"], "sex": "F"}
         fam_entry = {"line": 9, "id": "f03", "husb": "i05", "wife": "i06", "marr": date(2000,6,20)}
         with captured_output() as (out,err):
             run.add_entry(husb_entry, "INDI")
@@ -170,8 +170,8 @@ class US05Test(unittest.TestCase):
         self.assertIn("FAM f03 has marriage after death date of one of the spouses", output)
         
     def test_wife_death_before_marr(self):
-        husb_entry = {"line": 10, "id": "i07", "birth": date(1980,5,20), "death": date(2017,3,4), "fams": ["f04"], "sex": "M"}
-        wife_entry = {"line": 11, "id": "i08", "birth": date(1982,6,10), "death": date(1999,3,4), "fams": ["f04"], "sex": "F"}
+        husb_entry = {"line": 10, "id": "i07", "name":"test", "birth": date(1980,5,20), "death": date(2017,3,4), "fams": ["f04"], "sex": "M"}
+        wife_entry = {"line": 11, "id": "i08", "name":"test", "birth": date(1982,6,10), "death": date(1999,3,4), "fams": ["f04"], "sex": "F"}
         fam_entry = {"line": 12, "id": "f04", "husb": "i07", "wife": "i08", "marr": date(2000,6,20)}
         with captured_output() as (out,err):
             run.add_entry(husb_entry, "INDI")
@@ -181,8 +181,8 @@ class US05Test(unittest.TestCase):
         self.assertIn("FAM f04 has marriage after death date of one of the spouses", output)    
         
     def test_both_death_before_marr(self):
-        husb_entry = {"line": 13, "id": "i09", "birth": date(1980,5,20), "death": date(1999,3,4), "fams": ["f05"], "sex": "M"}
-        wife_entry = {"line": 14, "id": "i10", "birth": date(1982,6,10), "death": date(1999,3,4), "fams": ["f05"], "sex": "F"}
+        husb_entry = {"line": 13, "id": "i09", "name":"test", "birth": date(1980,5,20), "death": date(1999,3,4), "fams": ["f05"], "sex": "M"}
+        wife_entry = {"line": 14, "id": "i10", "name":"test", "birth": date(1982,6,10), "death": date(1999,3,4), "fams": ["f05"], "sex": "F"}
         fam_entry = {"line": 15, "id": "f05", "husb": "i09", "wife": "i10", "marr": date(2000,6,20)}
         with captured_output() as (out,err):
             run.add_entry(husb_entry, "INDI")
@@ -408,6 +408,19 @@ class US40Test(unittest.TestCase):
             run.add_entry(wife_entry, "INDI")
             run.add_entry(fam_entry, "FAM")
         output = out.getvalue().strip()
-        self.assertEquals("[Line 1] US03 Error: INDI i07 has death date before birth date\n[Line 3] US21 Error: FAM f04 has husband that is not male\n[Line 3] US05 Error: FAM f04 has marriage after death date of one of the spouses", output)
+        self.assertEquals("[Line 1] US03 Error: INDI i07 has death date before birth date\n[Line 3] US05 Error: FAM f04 has marriage after death date of one of the spouses\n[Line 3] US21 Error: FAM f04 has husband that is not male", output)
+
+# Include input line numbers
+class US07Test(unittest.TestCase):
+    def setUp(self):
+        run.indiList = []
+
+    def test_line_errors(self):
+        ent = {"line": 1, "id": "i01", "name":"test", "birth": date(1901,1,10), "death": date(2070,1,1), "fams": ["f01"], "sex": "F"}
+        with captured_output() as (out,err):
+            run.add_entry(ent, "INDI")
+        output = out.getvalue().strip()
+        self.assertEquals("[Line 1] US07 Error: INDI i01 test is claimed to be over 150 years old", output)
+
 
 unittest.main()

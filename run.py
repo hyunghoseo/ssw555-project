@@ -111,21 +111,35 @@ def add_entry(entry, type):
                 entry["age"] = get_age(entry["birth"], date.today())
         else:
             print "[Line {line}] Error: INDI {id} is missing a birth date".format(**entry)
+        us07_maxAge150(entry)
         indiList.append(entry)
     if type == "FAM":
-        if entry.get("div") and entry.get("marr") and (get_age(entry.get("marr"),entry.get("div")) < 0):
-            print "[Line {line}] US04 Error: FAM {id} has marriage date occurred after divorce date".format(**entry)
+        us04_marrBeforeDiv(entry)
         if entry.get("marr") and entry.get("husb") and entry.get("wife"):
             husb = get_indi(entry['husb'])
             wif = get_indi(entry['wife'])
-            if (husb.get("sex") != "M"):
+            us05_marrBeforeDeat(entry, husb, wif)
+            if husb.get("sex") != "M":
                 print "[Line {line}] US21 Error: FAM {id} has husband that is not male".format(**entry)
-            if (wif.get("sex") != "F"):
+            if wif.get("sex") != "F":
                 print "[Line {line}] US21 Error: FAM {id} has wife that is not female".format(**entry)
-            if (husb.get("death") and get_age(entry.get("marr"),husb["death"]) < 0) or (wif.get("death") and get_age(entry.get("marr"),wif["death"]) < 0):
-                print "[Line {line}] US05 Error: FAM {id} has marriage after death date of one of the spouses".format(**entry)
-
         famList.append(entry)
+
+
+def us04_marrBeforeDiv(entry):
+    if entry.get("div") and entry.get("marr") and (get_age(entry.get("marr"),entry.get("div")) < 0):
+        print "[Line {line}] US04 Error: FAM {id} has marriage date after divorce date".format(**entry)
+
+
+def us05_marrBeforeDeat(entry, husb, wif):
+    if (husb.get("death") and get_age(entry.get("marr"),husb["death"]) < 0) or (wif.get("death") and get_age(entry.get("marr"),wif["death"]) < 0):
+        print "[Line {line}] US05 Error: FAM {id} has marriage after death date of one of the spouses".format(**entry)
+
+
+def us07_maxAge150(entry):
+    # if (entry.get("death") and (get_age(entry.get("birth"),entry.get("death")) > 150)) or (get_age(entry.get("birth"),date.today()) > 150):
+    if entry.get("age") > 150:
+        print "[Line {line}] US07 Error: INDI {id} {name} is claimed to be over 150 years old".format(**entry)
 
 def US12_check_parents_age_valid():
     for fam in famList:
@@ -192,7 +206,7 @@ def print_indi_table():
                     indi.get("famc","None"),
                     indi.get("fams","NA")
                   ])
-    print "Indivudals\n", t
+    print "Individuals\n", t
                   
 def print_fam_table():
     t = PrettyTable()
