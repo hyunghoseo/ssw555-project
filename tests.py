@@ -2,7 +2,7 @@ import unittest
 import sys
 from contextlib import contextmanager
 from StringIO import StringIO
-from datetime import date
+from datetime import date, datetime, timedelta
 import run
 
 @contextmanager
@@ -346,10 +346,10 @@ class US35Test(unittest.TestCase):
         run.indiList = []
 
     def test_list_single(self):
-        entry1 = {"id": "i01", "name": "John /Smith/", "birth": date(2018, 10, 20), "sex": "M"}
+        entry1 = {"id": "i01", "name": "John /Smith/", "birth": date.today()+timedelta(-10), "sex": "M"}
         entry3 = {"id": "i03", "name": "Connor /Thompson/", "birth": date(1939, 2, 23), "sex": "M", "fams": ["f01"]}
         entry4 = {"id": "i04", "name": "Wendy /Anderson/", "birth": date(2018, 9, 23), "sex": "F"}
-        entry5 = {"id": "i05", "name": "Danielle /Jones/", "birth": date(2018, 10, 24), "sex": "F"}
+        entry5 = {"id": "i05", "name": "Danielle /Jones/", "birth": date.today()+timedelta(-30), "sex": "F"}
         with captured_output() as (out, err):
             run.add_entry(entry1, "INDI")
             run.add_entry(entry3, "INDI")
@@ -365,10 +365,10 @@ class US36Test(unittest.TestCase):
         run.indiList = []
 
     def test_list_single(self):
-        entry1 = {"id": "i01", "name": "John /Smith/", "birth": date(1990, 10, 20), "sex": "M", "death": date(2018, 10, 20)}
+        entry1 = {"id": "i01", "name": "John /Smith/", "birth": date(1990, 10, 20), "sex": "M", "death": date.today()+timedelta(-10)}
         entry3 = {"id": "i03", "name": "Connor /Thompson/", "birth": date(1939, 2, 23), "sex": "M", "fams": ["f01"]}
         entry4 = {"id": "i04", "name": "Wendy /Anderson/", "birth": date(1950, 9, 23), "sex": "F"}
-        entry5 = {"id": "i05", "name": "Danielle /Jones/", "birth": date(1960, 10, 24), "sex": "F", "death": date(2018, 9, 28)}
+        entry5 = {"id": "i05", "name": "Danielle /Jones/", "birth": date(1960, 10, 24), "sex": "F", "death": date.today()+timedelta(-30)}
         with captured_output() as (out, err):
             run.add_entry(entry1, "INDI")
             run.add_entry(entry3, "INDI")
