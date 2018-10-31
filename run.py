@@ -96,6 +96,7 @@ def main(fname):
         US30_print_list_living_married()
         US35_list_recent_birth()
         US36_list_recent_deaths()
+        US33_print_list_orphans()
             
         print_indi_table()
         print_fam_table()
@@ -255,6 +256,23 @@ def US31_print_list_single():
         print "(US31) List of living, single people over 30 who have never been married: " + ', '.join(list_of_singles)
     else:
         print "(US31) There are no living, single people over 30"
+        
+def US33_print_list_orphans():
+    list = []
+    for indi in indiList:
+        if not indi.get("age"):
+            print "Error: INDI {} has no age".format(indi.get("id"))
+            continue
+        if indi.get("age") < 18 and indi.get("famc"):
+            fam = get_fam(indi.get("famc"))
+            husb = get_indi(fam.get("husb"))
+            wife = get_indi(fam.get("wife"))
+            if husb.get("death") and wife.get("death"):
+                list.append("{} {}".format(indi.get("id"),indi.get("name")))
+    if list:
+        print "(US33) List of orphans: " + ', '.join(list)
+    else:
+        print "(US33) There are no orphans"
 
 def US35_list_recent_birth():
     list_recent_births = get_list('recBirth')

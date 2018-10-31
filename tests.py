@@ -498,6 +498,63 @@ class US10Test(unittest.TestCase):
             run.add_entry(fam, "FAM")
         output = out.getvalue().strip()
         self.assertEquals("[Line 30] US10 Error: FAM f01 marriage occurred prior to 14th birthday of wife", output)
+        
+# List Orphans
+class US33Test(unittest.TestCase):
+    def setUp(self):
+        run.indiList = []
+        run.famList = []
+
+    def test_list_orphans_both_alive(self):
+        husb_entry = {"id": "i01", "name": "John /Smith/", "birth": date(1980,5,20), "fams": ["f01"], "sex": "M"}
+        wife_entry = {"id": "i02", "name": "Wendy /Anderson/", "birth": date(1982,6,10), "fams": ["f01"], "sex": "F"}
+        child_entry = {"id": "i03", "name": "Bob /Smith/", "birth": date(2005,3,10), "famc": "f01", "sex": "M"}
+        child2_entry = {"id": "i04", "name": "Bobolder /Smith/", "birth": date(1999,3,10), "famc": "f01", "sex": "M"}
+        fam_entry = {"id": "f01", "husb": "i01", "wife": "i02", "children": ["i03","i04"], "marr": date(1998,6,20)}
+        with captured_output() as (out,err):
+            run.add_entry(husb_entry, "INDI")
+            run.add_entry(wife_entry, "INDI")
+            run.add_entry(child_entry, "INDI")
+            run.add_entry(child2_entry, "INDI")
+            run.add_entry(fam_entry, "FAM")
+            run.US33_print_list_orphans()
+        output = out.getvalue().strip()
+        self.assertEquals("(US33) There are no orphans", output)
+
+    def test_list_orphans_both_dead(self):
+        husb_entry = {"id": "i01", "name": "John /Smith/", "birth": date(1980,5,20), "death": date(2018,3,11), "fams": ["f01"], "sex": "M"}
+        wife_entry = {"id": "i02", "name": "Wendy /Anderson/", "birth": date(1982,6,10), "death": date(2018,3,11), "fams": ["f01"], "sex": "F"}
+        child_entry = {"id": "i03", "name": "Bob /Smith/", "birth": date(2005,3,10), "famc": "f01", "sex": "M"}
+        child2_entry = {"id": "i04", "name": "Bobolder /Smith/", "birth": date(1999,3,10), "famc": "f01", "sex": "M"}
+        fam_entry = {"id": "f01", "husb": "i01", "wife": "i02", "children": ["i03","i04"], "marr": date(1998,6,20)}
+        with captured_output() as (out,err):
+            run.add_entry(husb_entry, "INDI")
+            run.add_entry(wife_entry, "INDI")
+            run.add_entry(child_entry, "INDI")
+            run.add_entry(child2_entry, "INDI")
+            run.add_entry(fam_entry, "FAM")
+            run.US33_print_list_orphans()
+        output = out.getvalue().strip()
+        self.assertEquals("(US33) List of orphans: i03 Bob /Smith/", output)
+        
+# Include individual ages
+class US27Test(unittest.TestCase):
+    def setUp(self):
+        run.indiList = []
+        run.famList = []
+
+    def test_ages(self):
+        entry1 = {"id": "i01", "name": "John /Smith/", "birth": date(1980,5,20), "death": date(2005,2,3), "fams": ["f01"], "sex": "M"}
+        entry2 = {"id": "i02", "name": "Wendy /Anderson/", "birth": date(1982,6,10), "death": date(2003,8,12), "fams": ["f01"], "sex": "F"}
+        entry3 = {"id": "i03", "name": "Bob /Anderson/", "birth": date(1990,6,10), "fams": ["f01"], "sex": "F"}
+        with captured_output() as (out,err):
+            run.add_entry(entry1, "INDI")
+            run.add_entry(entry2, "INDI")
+            run.add_entry(entry3, "INDI")
+        output = out.getvalue().strip()
+        self.assertEquals(run.get_indi("i01").get("age"), 24)
+        self.assertEquals(run.get_indi("i02").get("age"), 21)
+        self.assertEquals(run.get_indi("i03").get("age"), 28)
 
 
 unittest.main()
