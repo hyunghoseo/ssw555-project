@@ -112,6 +112,8 @@ def add_entry(entry, type):
         else:
             print "[Line {line}] Error: INDI {id} is missing a birth date".format(**entry)
         us07_maxAge150(entry)
+        if get_indi(entry['id']):
+            print "[Line {line}] US22I Error: INDI {id} is a duplicated ID".format(**entry)
         indiList.append(entry)
     if type == "FAM":
         us04_marrBeforeDiv(entry)
@@ -124,6 +126,12 @@ def add_entry(entry, type):
                 print "[Line {line}] US21 Error: FAM {id} has husband that is not male".format(**entry)
             if wif.get("sex") != "F":
                 print "[Line {line}] US21 Error: FAM {id} has wife that is not female".format(**entry)
+        if entry.get("children"):
+            numChil = len(entry.get("children"))
+            if numChil > 14:
+                print "[Line {line}] US15 Error: FAM {id} has {numChil} siblings, should be fewer than 15".format(numChil=numChil,**entry)
+        if get_fam(entry['id']):
+            print "[Line {line}] US22F Error: FAM {id} is a duplicated ID".format(**entry)
         famList.append(entry)
 
 

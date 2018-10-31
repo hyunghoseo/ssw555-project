@@ -464,4 +464,65 @@ class US10Test(unittest.TestCase):
         self.assertEquals("[Line 30] US10 Error: FAM f01 marriage occurred prior to 14th birthday of wife", output)
 
 
+class US15Test(unittest.TestCase):
+    def setUp(self):
+        run.indiList = []
+        run.famList = []
+
+    def testErr(self):
+        husb = {"line": 1, "id": "i01", "name":"husband", "birth": date(2001,12,10), "fams": ["f01"], "sex": "M"}
+        wif = {"line": 10, "id": "i02", "name":"wife", "birth": date(2000,1,10), "fams": ["f01"], "sex": "F"}
+        fam = {"line": 1, "id": "f01", "husb": "i01", "wife": "i02", "marr": date(2010, 1, 10), "children":["i01","i02","i03","i04","i05","i06","i07","i08","i09","i10","i11","i12","i13","i14","i15","i16","i17","i18","i19","i20"]}
+        with captured_output() as (out,err):
+            run.add_entry(husb, "INDI")
+            run.add_entry(wif, "INDI")
+            run.add_entry(fam, "FAM")
+        output = out.getvalue().strip()
+        self.assertTrue("[Line 1] US15 Error: FAM f01 has 20 siblings, should be fewer than 15" in output)
+
+    def testPass(self):
+        husb = {"line": 1, "id": "i01", "name":"husband", "birth": date(2001,12,10), "fams": ["f01"], "sex": "M"}
+        wif = {"line": 10, "id": "i02", "name":"wife", "birth": date(2000,1,10), "fams": ["f01"], "sex": "F"}
+        fam = {"line": 1, "id": "f01", "husb": "i01", "wife": "i02", "marr": date(2010, 1, 10),
+               "children": ["i01", "i02", "i03", "i04", "i05", "i06", "i07", "i08"]}
+        with captured_output() as (out, err):
+            run.add_entry(husb, "INDI")
+            run.add_entry(wif, "INDI")
+            run.add_entry(fam, "FAM")
+        output = out.getvalue().strip()
+        self.assertTrue("US15 Error: FAM f01" not in output)
+
+
+class US22Test(unittest.TestCase):
+    def setUp(self):
+        run.indiList = []
+        run.famList = []
+
+    def testIndi(self):
+        husb = {"line": 1, "id": "i01", "name":"husband", "birth": date(2001,12,10), "fams": ["f01"], "sex": "M"}
+        wif = {"line": 5, "id": "i01", "name":"wife", "birth": date(2000,1,10), "fams": ["f01"], "sex": "F"}
+        i3 = {"line": 10, "id": "i01", "name":"test", "birth": date(2000,1,10), "fams": ["f05"], "sex": "M"}
+        with captured_output() as (out,err):
+            run.add_entry(husb, "INDI")
+            run.add_entry(wif, "INDI")
+            run.add_entry(i3, "INDI")
+        output = out.getvalue().strip()
+        self.assertTrue("[Line 5] US22I Error: INDI i01 is a duplicated ID" in output)
+        self.assertTrue("[Line 10] US22I Error: INDI i01 is a duplicated ID" in output)
+
+    def testFam(self):
+        husb = {"line": 1, "id": "i01", "name":"husband", "birth": date(2001,12,10), "fams": ["f01"], "sex": "M"}
+        wif = {"line": 10, "id": "i02", "name":"wife", "birth": date(2000,1,10), "fams": ["f01"], "sex": "F"}
+        fam = {"line": 1, "id": "f01", "husb": "i01", "wife": "i02", "marr": date(2010, 1, 10), "children": ["i01", "i02", "i03", "i04", "i05", "i06", "i07", "i08"]}
+        fam2 = {"line": 22, "id": "f01", "husb": "i01", "wife": "i02", "marr": date(2017, 1, 10)}
+        with captured_output() as (out, err):
+            run.add_entry(husb, "INDI")
+            run.add_entry(wif, "INDI")
+            run.add_entry(fam, "FAM")
+            run.add_entry(fam2, "FAM")
+        output = out.getvalue().strip()
+        self.assertTrue("[Line 22] US22F Error: FAM f01 is a duplicated ID" in output)
+
+
+
 unittest.main()
