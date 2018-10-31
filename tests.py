@@ -340,7 +340,43 @@ class US31Test(unittest.TestCase):
         output = out.getvalue().strip()
         self.assertEquals("(US31) List of living, single people over 30 who have never been married: i01 John /Smith/, i05 Danielle /Jones/", output)
 
-   
+# List recent births
+class US35Test(unittest.TestCase):
+    def setUp(self):
+        run.indiList = []
+
+    def test_list_single(self):
+        entry1 = {"id": "i01", "name": "John /Smith/", "birth": date(2018, 10, 20), "sex": "M"}
+        entry3 = {"id": "i03", "name": "Connor /Thompson/", "birth": date(1939, 2, 23), "sex": "M", "fams": ["f01"]}
+        entry4 = {"id": "i04", "name": "Wendy /Anderson/", "birth": date(2018, 9, 23), "sex": "F"}
+        entry5 = {"id": "i05", "name": "Danielle /Jones/", "birth": date(2018, 10, 24), "sex": "F"}
+        with captured_output() as (out, err):
+            run.add_entry(entry1, "INDI")
+            run.add_entry(entry3, "INDI")
+            run.add_entry(entry4, "INDI")
+            run.add_entry(entry5, "INDI")
+            run.US35_list_recent_birth()
+        output = out.getvalue().strip()
+        self.assertEquals("(US35) List of people that were born in the last 30 days: i01 John /Smith/, i05 Danielle /Jones/", output)
+
+# List recent deaths
+class US36Test(unittest.TestCase):
+    def setUp(self):
+        run.indiList = []
+
+    def test_list_single(self):
+        entry1 = {"id": "i01", "name": "John /Smith/", "birth": date(1990, 10, 20), "sex": "M", "death": date(2018, 10, 20)}
+        entry3 = {"id": "i03", "name": "Connor /Thompson/", "birth": date(1939, 2, 23), "sex": "M", "fams": ["f01"]}
+        entry4 = {"id": "i04", "name": "Wendy /Anderson/", "birth": date(1950, 9, 23), "sex": "F"}
+        entry5 = {"id": "i05", "name": "Danielle /Jones/", "birth": date(1960, 10, 24), "sex": "F", "death": date(2018, 9, 28)}
+        with captured_output() as (out, err):
+            run.add_entry(entry1, "INDI")
+            run.add_entry(entry3, "INDI")
+            run.add_entry(entry4, "INDI")
+            run.add_entry(entry5, "INDI")
+            run.US36_list_recent_deaths()
+        output = out.getvalue().strip()
+        self.assertEquals("(US36) List of people that died in the last 30 days: i01 John /Smith/, i05 Danielle /Jones/", output)
    
 # Correct gender for role
 class US21Test(unittest.TestCase):
