@@ -1,5 +1,5 @@
 import sys
-from datetime import datetime, date
+from datetime import datetime, date, timedelta
 from prettytable import PrettyTable
 
 # dict of level-to-tags
@@ -94,6 +94,9 @@ def main(fname):
         US31_print_list_single()
         US29_print_list_deceased()
         US30_print_list_living_married()
+        US35_list_recent_birth()
+        US36_list_recent_deaths()
+        US33_print_list_orphans()
             
         print_indi_table()
         print_fam_table()
@@ -261,6 +264,37 @@ def US31_print_list_single():
         print "(US31) List of living, single people over 30 who have never been married: " + ', '.join(list_of_singles)
     else:
         print "(US31) There are no living, single people over 30"
+        
+def US33_print_list_orphans():
+    list = []
+    for indi in indiList:
+        if not indi.get("age"):
+            print "Error: INDI {} has no age".format(indi.get("id"))
+            continue
+        if indi.get("age") < 18 and indi.get("famc"):
+            fam = get_fam(indi.get("famc"))
+            husb = get_indi(fam.get("husb"))
+            wife = get_indi(fam.get("wife"))
+            if husb.get("death") and wife.get("death"):
+                list.append("{} {}".format(indi.get("id"),indi.get("name")))
+    if list:
+        print "(US33) List of orphans: " + ', '.join(list)
+    else:
+        print "(US33) There are no orphans"
+
+def US35_list_recent_birth():
+    list_recent_births = get_list('recBirth')
+    if list_recent_births:
+        print "(US35) List of people that were born in the last 30 days: " + ', '.join(list_recent_births)
+    else:
+        print "(US35) There are no people who were born in the last 30 days"
+
+def US36_list_recent_deaths():
+    list_recent_deaths = get_list('recDeath')
+    if list_recent_deaths:
+        print "(US36) List of people that died in the last 30 days: " + ', '.join(list_recent_deaths)
+    else:
+        print "(US36) There are no people who died in the last 30 days"
 
 def get_list(type):
     list_of_people = []
@@ -283,6 +317,17 @@ def get_list(type):
                 id_name_wife = wife.get("id") + " " + wife.get("name")
                 list_of_people.append(id_name_husb)
                 list_of_people.append(id_name_wife)
+    elif type == 'recBirth':
+        for indi in indiList:
+            if 0 <= (datetime.today() - dateToDateTime(indi.get("birth"))).days <= 30:
+                id_and_name = indi.get("id") + " " + indi.get("name")
+                list_of_people.append(id_and_name)
+    elif type == 'recDeath':
+        for indi in indiList:
+            if indi.get("death"):
+                if 0 <= (datetime.today() - dateToDateTime(indi.get("death"))).days <= 30:
+                    id_and_name = indi.get("id") + " " + indi.get("name")
+                    list_of_people.append(id_and_name)
     return list_of_people
 
 def get_indi(id):
@@ -294,6 +339,8 @@ def get_fam(id):
 def get_age(birth, death):
     return death.year - birth.year - ((death.month, death.day) < (birth.month, birth.day))
 
+def dateToDateTime(date):
+    return datetime.combine(date, datetime.min.time())
 
 if __name__ == "__main__":
     try:
