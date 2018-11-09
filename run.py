@@ -97,6 +97,8 @@ def main(fname):
         US35_list_recent_birth()
         US36_list_recent_deaths()
         US33_print_list_orphans()
+        us23_unique_name_birth()
+        us25_unique_name_birth_in_fam()
             
         print_indi_table()
         print_fam_table()
@@ -176,6 +178,51 @@ def US12_check_parents_age_valid():
                     print "[Line {line}] US12 Error: INDI's {id} Mother is 60 years or older than him/her".format(**child)
                 if father.get("age") and child.get("age") and father["age"] - child["age"] >= 80:
                     print "[Line {line}] US12 Error: INDI's {id} Father is 80 years or older than him/her".format(**child)
+
+def us23_unique_name_birth():
+    seen = {}
+    dupes = []
+    for indi in indiList:
+        name_and_birth = indi.get("name") + unicode(indi.get("birth"))
+        if name_and_birth not in seen:
+            seen[name_and_birth] = [indi]
+        else:
+            if len(seen[name_and_birth]) == 1:
+                dupes.append(name_and_birth)
+            seen[name_and_birth].append(indi)
+            
+    for dupe in dupes:
+        id_list = [indi.get("id") for indi in seen[dupe]]
+        name = seen[dupe][0].get("name")
+        birth = seen[dupe][0].get("birth").strftime("%d %b %Y")
+        print "US23 Error: Individuals {} have the same name and birth of {} and {}".format(", ".join(id_list), name, birth) 
+        
+def us25_unique_name_birth_in_fam():
+    for fam in famList:
+        seen = {}
+        dupes = []
+        
+        children = fam.get("children")
+        if not children:
+            break
+        for child_id in children:
+            indi = get_indi(child_id)
+            if not indi:
+                break
+            name_and_birth = indi.get("name") + unicode(indi.get("birth"))
+            if name_and_birth not in seen:
+                seen[name_and_birth] = [indi]
+            else:
+                if len(seen[name_and_birth]) == 1:
+                    dupes.append(name_and_birth)
+                seen[name_and_birth].append(indi)
+            
+        for dupe in dupes:
+            id_list = [indi.get("id") for indi in seen[dupe]]
+            name = seen[dupe][0].get("name")
+            birth = seen[dupe][0].get("birth").strftime("%d %b %Y")
+            print "US25 Error: In FAM {}, children {} have the same name and birth of {} and {}".format(fam.get("id"), ", ".join(id_list), name, birth) 
+        
 
 def check_birth_before_marr():
     for entry in indiList:

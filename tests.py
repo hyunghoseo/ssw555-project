@@ -617,5 +617,40 @@ class US22Test(unittest.TestCase):
         self.assertTrue("[Line 22] US22F Error: FAM f01 is a duplicated ID" in output)
 
 
+# Unique name and birth date
+class US23Test(unittest.TestCase):
+    def setUp(self):
+        run.indiList = []
+
+    def test_unique_name_birth(self):
+        entry1 = {"id": "i01", "name": "John /Smith/", "birth": date.today(), "sex": "M"}
+        entry2 = {"id": "i02", "name": "Connor /Thompson/", "birth": date(1939, 2, 23), "sex": "M"}
+        entry3 = {"id": "i03", "name": "Connor /Thompson/", "birth": date(1939, 2, 23), "sex": "F"}
+        with captured_output() as (out, err):
+            run.add_entry(entry1, "INDI")
+            run.add_entry(entry2, "INDI")
+            run.add_entry(entry3, "INDI")
+            run.us23_unique_name_birth()
+        output = out.getvalue().strip()
+        self.assertEquals("US23 Error: Individuals i02, i03 have the same name and birth of Connor /Thompson/ and 23 Feb 1939", output)
+
+# Unique first names in families
+class US25Test(unittest.TestCase):
+    def setUp(self):
+        run.indiList = []
+
+    def test_unique_name_birth_fam(self):
+        entry1 = {"id": "i01", "name": "John /Smith/", "birth": date.today(), "sex": "M"}
+        entry2 = {"id": "i02", "name": "Connor /Thompson/", "birth": date(1939, 2, 23), "sex": "M", "famc": "f01"}
+        entry3 = {"id": "i03", "name": "Connor /Thompson/", "birth": date(1939, 2, 23), "sex": "F", "famc": "f01"}
+        entry4 = {"id": "f01", "children": ["i02","i03"]}
+        with captured_output() as (out, err):
+            run.add_entry(entry1, "INDI")
+            run.add_entry(entry2, "INDI")
+            run.add_entry(entry3, "INDI")
+            run.add_entry(entry4, "FAM")
+            run.us25_unique_name_birth_in_fam()
+        output = out.getvalue().strip()
+        self.assertEquals("US25 Error: In FAM f01, children i02, i03 have the same name and birth of Connor /Thompson/ and 23 Feb 1939", output)
 
 unittest.main()
