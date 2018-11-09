@@ -116,7 +116,7 @@ def add_entry(entry, type):
             print "[Line {line}] Error: INDI {id} is missing a birth date".format(**entry)
         us07_maxAge150(entry)
         if get_indi(entry['id']):
-            print "[Line {line}] US22 Error: INDI {id} is a duplicated ID".format(**entry)
+            print "[Line {line}] US22I Error: INDI {id} is a duplicated ID".format(**entry)
         indiList.append(entry)
     if type == "FAM":
         us04_marrBeforeDiv(entry)
