@@ -1,6 +1,7 @@
 import sys
 from datetime import datetime, date, timedelta
 from prettytable import PrettyTable
+from operator import itemgetter
 
 # dict of level-to-tags
 tags = {"0": ["INDI","FAM","HEAD","TRLR","NOTE"],
@@ -128,6 +129,7 @@ def add_entry(entry, type):
             husb = get_indi(entry['husb'])
             wif = get_indi(entry['wife'])
             us05_marrBeforeDeat(entry, husb, wif)
+            if entry.get("div"): us06_divBeforeDeat(entry, husb, wif)
             us10_marrAfter14(entry, husb, wif)
             if husb.get("sex") != "M":
                 print "[Line {line}] US21 Error: FAM {id} has husband that is not male".format(**entry)
@@ -150,6 +152,11 @@ def us04_marrBeforeDiv(entry):
 def us05_marrBeforeDeat(entry, husb, wif):
     if (husb.get("death") and get_age(entry.get("marr"),husb["death"]) < 0) or (wif.get("death") and get_age(entry.get("marr"),wif["death"]) < 0):
         print "[Line {line}] US05 Error: FAM {id} has marriage after death date of one of the spouses".format(**entry)
+
+
+def us06_divBeforeDeat(entry, husb, wif):
+    if (husb.get("death") and get_age(entry.get("div"),husb["death"]) < 0) or (wif.get("death") and get_age(entry.get("div"),wif["death"]) < 0):
+        print "[Line {line}] US06 Error: FAM {id} has divorce after death date of a spouses".format(**entry)
 
 
 def us07_maxAge150(entry):
@@ -280,8 +287,12 @@ def print_indi_table():
                   
 def print_fam_table():
     t = PrettyTable()
-    t.field_names = ["ID","Married","Divorced","Husband ID","Husband Name","Wife ID","Wife Name","Children"]
+    t.field_names = ["ID","Married","Divorced","Husband ID","Husband Name","Wife ID","Wife Name","Children (US28 Ordered By Age Desc)"]
     for fam in famList:
+        if fam.get("children"):
+            chilOtp = us28_orderChildren(fam.get("children"))
+        else:
+            chilOtp = "NA"
         t.add_row([ fam.get("id","NA"),
                     fam.get("marrStr","NA"),
                     fam.get("divStr","NA"),
@@ -289,9 +300,26 @@ def print_fam_table():
                     get_indi(fam.get("husb")).get("name"),
                     fam.get("wife","NA"),
                     get_indi(fam.get("wife")).get("name"),
-                    fam.get("children","NA")
+                    # fam.get("children","NA")
+                    chilOtp
                   ])
     print "Families\n", t
+
+
+# reorder list of children in a fam by age... Indis in the Fam's chil list that don't actually exist are defaulted to 0
+def us28_orderChildren(chilLst):
+    lol = [] # list of lists... lol
+    for chil in chilLst:
+        age = 0
+        if get_indi(chil):
+            age = get_indi(chil).get("age")
+        lol.append([chil,age])
+    ordLst = sorted(lol,key=itemgetter(1),reverse=True)
+    ordIds = []
+    for ent  in ordLst:
+        ordIds.append(ent[0])
+    return ordIds
+
 
 def US29_print_list_deceased():
     list_of_deceased = get_list('deceased')
