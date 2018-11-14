@@ -1,37 +1,103 @@
-Error: INDI @I10@ has death date before birth date
-Error: FAM @F2@ has marriage date occurred after divorce date
-Error: FAM @F5@ has marriage after death date of one of the spouses
-Error: INDI @I9@ has marriage date before birth date
-Error: INDI's @I11@ Mother is 60 years or older than him/her
-List of living, single people over 30 who haven't been married: @I14@
-List of deceased people: @I2@, @I10@, @I12@
+[Line 25] US07 Error: INDI @I2@ Carl /Smith/ is claimed to be over 150 years old
+[Line 106] US03 Error: INDI @I10@ has death date before birth date
+[Line 137] US22I Error: INDI @I12@ is a duplicated ID
+[Line 220] US03 Error: INDI @I21@ has death date before birth date
+[Line 232] US22I Error: INDI @I21@ is a duplicated ID
+[Line 268] US10 Error: FAM @F1@ marriage occurred prior to 14th birthday of wife
+[Line 268] US21 Error: FAM @F1@ has wife that is not female
+[Line 280] US04 Error: FAM @F2@ has marriage date after divorce date
+[Line 290] US21 Error: FAM @F3@ has husband that is not male
+[Line 290] US21 Error: FAM @F3@ has wife that is not female
+[Line 290] US15 Error: FAM @F3@ has 18 siblings, should be fewer than 15
+[Line 332] US10 Error: FAM @F6@ marriage occurred prior to 14th birthday of husband
+[Line 340] US05 Error: FAM @F10@ has marriage after death date of one of the spouses
+[Line 340] US06 Error: FAM @F10@ has divorce after death date of a spouses
+[Line 340] US10 Error: FAM @F10@ marriage occurred prior to 14th birthday of husband
+[Line 356] US05 Error: FAM @F8@ has marriage after death date of one of the spouses
+[Line 356] US10 Error: FAM @F8@ marriage occurred prior to 14th birthday of husband
+[Line 95] US02 Error: INDI @I9@ has marriage date before birth date
+[Line 220] US02 Error: INDI @I21@ has marriage date before birth date
+[Line 16] US12 Error: INDI's @I1@ Father is 80 years or older than him/her
+(US31) List of living, single people over 30 who have never been married: @I14@ James /Thompson/, @I18@ Carl /Smith/, @I20@ Carl /Smith/
+(US29) List of deceased people: @I2@ Carl /Smith/, @I9@ Daryl /Peterson/, @I10@ Samantha /Thompson/, @I12@ Thomas /Thompson/, @I12@ Thomas /Thompson/, @I15@ Peter /Peterson/, @I16@ Petra /Peterson/, @I21@ Test /Peterson/
+(US30) List of living, married people: @I4@ Connor /Thompson/, @I3@ Wendy /Anderson/, @I6@ Danielle /Jones/, @I5@ Kevin /Anderson/, @I24@ Ari /Turner/, @I25@ Edna /Turner/
+(US35) List of people that were born in the last 30 days: @I11@ Julia /Thompson/
+(US36) List of people that died in the last 30 days: @I12@ Thomas /Thompson/
+Error: INDI @I10@ has no age
+Error: INDI @I11@ has no age
+Error: INDI @I21@ has no age
+(US33) List of orphans: @I17@ Peeta /Peterson/
+US23 Error: Individuals @I12@, @I12@ have the same name and birth of Thomas /Thompson/ and 08 Jul 1940
+US23 Error: Individuals @I2@, @I18@, @I20@ have the same name and birth of Carl /Smith/ and 11 Jun 1901
+US23 Error: Individuals @I10@, @I19@ have the same name and birth of Samantha /Thompson/ and 15 Apr 2016
+US25 Error: In FAM @F1@, children @I18@, @I20@ have the same name and birth of Carl /Smith/ and 11 Jun 1901
+(US38) List of all living people with birthdays in the next 30 days: @I21@ Deci /Smith/, @I22@ May /Smith/, @I23@ March /Smith/, @I24@ Ari /Turner/, @I25@ Edna /Turner/, @I26@ Yev /Turner/
+(US39) List of all living couples with anniversaries in the next 30 days: @I24@ Ari /Turner/ and @I25@ Edna /Turner/
 Individuals
 +-------+---------------------+--------+------------+-----+-------+------------+-------+------------------+
 |   ID  |         Name        | Gender |  Birthday  | Age | Alive |   Death    | Child |      Spouse      |
 +-------+---------------------+--------+------------+-----+-------+------------+-------+------------------+
 |  @I1@ |     John /Smith/    |   M    | 1998-01-10 |  20 |  True |     NA     |  @F1@ |        NA        |
-|  @I2@ |     Carl /Smith/    |   M    | 1971-06-11 |  34 | False | 2005-09-03 |  @F2@ |     ['@F1@']     |
-|  @I3@ |   Wendy /Anderson/  |   F    | 1950-04-06 |  68 |  True |     NA     |  @F4@ | ['@F1@', '@F3@'] |
-|  @I4@ |  Connor /Thompson/  |   M    | 1938-05-09 |  80 |  True |     NA     |  @F5@ |     ['@F3@']     |
-|  @I5@ |   Kevin /Anderson/  |   M    | 1945-04-11 |  73 |  True |     NA     |  None |     ['@F4@']     |
-|  @I6@ |   Danielle /Jones/  |   F    | 1945-10-05 |  72 |  True |     NA     |  None |     ['@F4@']     |
+|  @I2@ |     Carl /Smith/    |   M    | 1901-06-11 | 159 | False | 2060-09-03 |  @F2@ |     ['@F1@']     |
+|  @I3@ |   Wendy /Anderson/  |   M    | 1990-04-06 |  28 |  True |     NA     |  @F4@ | ['@F1@', '@F3@'] |
+|  @I4@ |  Connor /Thompson/  |   F    | 1938-05-09 |  80 |  True |     NA     |  @F5@ |     ['@F3@']     |
+|  @I5@ |   Kevin /Anderson/  |   F    | 1945-04-11 |  73 |  True |     NA     |  None |     ['@F4@']     |
+|  @I6@ |   Danielle /Jones/  |   M    | 1945-10-05 |  73 |  True |     NA     |  None |     ['@F4@']     |
 |  @I7@ |    David /Smith/    |   M    | 1939-07-06 |  79 |  True |     NA     |  None |     ['@F2@']     |
 |  @I8@ |     Sara /Lewis/    |   F    | 1938-12-16 |  79 |  True |     NA     |  None | ['@F2@', '@F6@'] |
-|  @I9@ |   Daryl /Peterson/  |   M    | 1998-04-02 |  20 |  True |     NA     |  None |     ['@F6@']     |
-| @I10@ | Samantha /Thompson/ |   F    | 2016-04-15 |  NA | False | 2015-01-03 |  @F3@ |        NA        |
-| @I11@ |   Julia /Thompson/  |   F    | 2016-04-15 |  2  |  True |     NA     |  @F3@ |        NA        |
+|  @I9@ |   Daryl /Peterson/  |   M    | 1998-04-02 |  16 | False | 2015-01-03 |  None |     ['@F6@']     |
+| @I10@ | Samantha /Thompson/ |   F    | 2016-04-15 |  NA | False | 1970-01-01 |  @F3@ |        NA        |
+| @I11@ |   Julia /Thompson/  |   F    | 2018-10-23 |  0  |  True |     NA     |  @F3@ |        NA        |
+| @I12@ |  Thomas /Thompson/  |   M    | 1940-07-08 |  78 | False | 2018-10-15 |  None |     ['@F5@']     |
 | @I12@ |  Thomas /Thompson/  |   M    | 1940-07-08 |  19 | False | 1960-03-04 |  None |     ['@F5@']     |
-| @I13@ |   Allison /Miller/  |   F    | 1940-11-08 |  77 |  True |     NA     |  None |     ['@F5@']     |
+| @I13@ |   Allison /Miller/  |   F    | 1940-11-08 |  78 |  True |     NA     |  None |     ['@F5@']     |
 | @I14@ |   James /Thompson/  |   M    | 1966-02-01 |  52 |  True |     NA     |  @F5@ |        NA        |
+| @I15@ |   Peter /Peterson/  |   M    | 1997-04-07 |  21 | False | 2018-09-10 |  @F6@ |     ['@F7@']     |
+| @I16@ |   Petra /Peterson/  |   F    | 1995-04-02 |  23 | False | 2018-10-02 |  None |     ['@F7@']     |
+| @I17@ |   Peeta /Peterson/  |   M    | 2015-06-02 |  3  |  True |     NA     |  @F7@ |        NA        |
+| @I18@ |     Carl /Smith/    |   M    | 1901-06-11 | 117 |  True |     NA     |  @F1@ |        NA        |
+| @I19@ | Samantha /Thompson/ |   F    | 2016-04-15 |  2  |  True |     NA     |  None |        NA        |
+| @I20@ |     Carl /Smith/    |   M    | 1901-06-11 | 117 |  True |     NA     |  None |        NA        |
+| @I21@ |   Test /Peterson/   |   M    | 1998-04-02 |  NA | False | 1970-01-03 |  @F1@ |     ['@F6@']     |
+| @I21@ |     Deci /Smith/    |   M    | 1960-11-15 |  57 |  True |     NA     |  None |     ['@F8@']     |
+| @I22@ |     May /Smith/     |   F    | 1961-11-30 |  56 |  True |     NA     |  None |     ['@F8@']     |
+| @I23@ |    March /Smith/    |   F    | 1998-12-10 |  19 |  True |     NA     |  @F8@ |        NA        |
+| @I24@ |     Ari /Turner/    |   M    | 1960-11-15 |  57 |  True |     NA     |  None |     ['@F9@']     |
+| @I25@ |    Edna /Turner/    |   F    | 1961-11-30 |  56 |  True |     NA     |  None |     ['@F9@']     |
+| @I26@ |     Yev /Turner/    |   M    | 1998-12-10 |  19 |  True |     NA     |  @F9@ |        NA        |
 +-------+---------------------+--------+------------+-----+-------+------------+-------+------------------+
 Families
-+------+------------+------------+------------+-------------------+---------+------------------+--------------------+
-|  ID  |  Married   |  Divorced  | Husband ID |    Husband Name   | Wife ID |    Wife Name     |      Children      |
-+------+------------+------------+------------+-------------------+---------+------------------+--------------------+
-| @F1@ | 1996-04-10 |     NA     |    @I2@    |    Carl /Smith/   |   @I3@  | Wendy /Anderson/ |      ['@I1@']      |
-| @F2@ | 1969-09-09 | 1950-08-15 |    @I7@    |   David /Smith/   |   @I8@  |   Sara /Lewis/   |      ['@I2@']      |
-| @F3@ | 2010-06-13 |     NA     |    @I4@    | Connor /Thompson/ |   @I3@  | Wendy /Anderson/ | ['@I10@', '@I11@'] |
-| @F4@ | 1967-03-28 |     NA     |    @I5@    |  Kevin /Anderson/ |   @I6@  | Danielle /Jones/ |      ['@I3@']      |
-| @F5@ | 1964-10-31 |     NA     |   @I12@    | Thomas /Thompson/ |  @I13@  | Allison /Miller/ | ['@I4@', '@I14@']  |
-| @F6@ | 1981-10-01 |     NA     |    @I9@    |  Daryl /Peterson/ |   @I8@  |   Sara /Lewis/   |         NA         |
-+------+------------+------------+------------+-------------------+---------+------------------+--------------------+
++-------+------------+------------+------------+-------------------+---------+------------------+--------------------------------------------------------------------------------------------------------------------------------------------------------------------
++
+|   ID  |  Married   |  Divorced  | Husband ID |    Husband Name   | Wife ID |    Wife Name     |                                                                Children (US28 Ordered By Age Desc)
+|
++-------+------------+------------+------------+-------------------+---------+------------------+--------------------------------------------------------------------------------------------------------------------------------------------------------------------
++
+|  @F1@ | 1996-04-10 |     NA     |    @I2@    |    Carl /Smith/   |   @I3@  | Wendy /Anderson/ |                                                                     ['@I18@', '@I20@', '@I1@']
+|
+|  @F2@ | 1969-09-09 | 1950-08-15 |    @I7@    |   David /Smith/   |   @I8@  |   Sara /Lewis/   |                                                                              ['@I2@']
+|
+|  @F3@ | 2010-06-13 |     NA     |    @I4@    | Connor /Thompson/ |   @I3@  | Wendy /Anderson/ | ['@I11@', '@I50@', '@I51@', '@I52@', '@I53@', '@I54@', '@I55@', '@I56@', '@I57@', '@I58@', '@I59@', '@I60@', '@I61@', '@I62@', '@I63@', '@I64@', '@I65@', '@I10@']
+|
+|  @F4@ | 1967-03-28 |     NA     |    @I6@    |  Danielle /Jones/ |   @I5@  | Kevin /Anderson/ |                                                                              ['@I3@']
+|
+|  @F5@ | 1964-10-31 |     NA     |   @I12@    | Thomas /Thompson/ |  @I13@  | Allison /Miller/ |                                                                         ['@I4@', '@I14@']
+|
+|  @F6@ | 1981-10-01 |     NA     |    @I9@    |  Daryl /Peterson/ |   @I8@  |   Sara /Lewis/   |                                                                             ['@I15@']
+|
+| @F10@ | 1981-10-01 | 2000-08-15 |   @I21@    |  Test /Peterson/  |   @I8@  |   Sara /Lewis/   |                                                                                 NA
+|
+|  @F7@ | 2014-06-06 |     NA     |   @I15@    |  Peter /Peterson/ |  @I16@  | Petra /Peterson/ |                                                                             ['@I17@']
+|
+|  @F8@ | 1996-11-20 |     NA     |   @I21@    |  Test /Peterson/  |  @I22@  |   May /Smith/    |                                                                             ['@I23@']
+|
+|  @F9@ | 1996-11-20 |     NA     |   @I24@    |    Ari /Turner/   |  @I25@  |  Edna /Turner/   |                                                                             ['@I26@']
+|
++-------+------------+------------+------------+-------------------+---------+------------------+--------------------------------------------------------------------------------------------------------------------------------------------------------------------
++
+..................................................
+----------------------------------------------------------------------
+Ran 50 tests in 0.005s
+
+OK
+
