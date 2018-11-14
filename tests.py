@@ -3,6 +3,7 @@ import sys
 from contextlib import contextmanager
 from StringIO import StringIO
 from datetime import date, datetime, timedelta
+from dateutil.relativedelta import relativedelta
 import run
 
 @contextmanager
@@ -345,7 +346,7 @@ class US35Test(unittest.TestCase):
     def setUp(self):
         run.indiList = []
 
-    def test_list_single(self):
+    def test_list_recbirths(self):
         entry1 = {"id": "i01", "name": "John /Smith/", "birth": date.today()+timedelta(-10), "sex": "M"}
         entry3 = {"id": "i03", "name": "Connor /Thompson/", "birth": date(1939, 2, 23), "sex": "M", "fams": ["f01"]}
         entry4 = {"id": "i04", "name": "Wendy /Anderson/", "birth": date(2018, 9, 23), "sex": "F"}
@@ -364,7 +365,7 @@ class US36Test(unittest.TestCase):
     def setUp(self):
         run.indiList = []
 
-    def test_list_single(self):
+    def test_list_recdeaths(self):
         entry1 = {"id": "i01", "name": "John /Smith/", "birth": date(1990, 10, 20), "sex": "M", "death": date.today()+timedelta(-10)}
         entry3 = {"id": "i03", "name": "Connor /Thompson/", "birth": date(1939, 2, 23), "sex": "M", "fams": ["f01"]}
         entry4 = {"id": "i04", "name": "Wendy /Anderson/", "birth": date(1950, 9, 23), "sex": "F"}
@@ -377,7 +378,59 @@ class US36Test(unittest.TestCase):
             run.US36_list_recent_deaths()
         output = out.getvalue().strip()
         self.assertEquals("(US36) List of people that died in the last 30 days: i01 John /Smith/, i05 Danielle /Jones/", output)
-   
+
+# List upcoming birthdays
+class US38Test(unittest.TestCase):
+    def setUp(self):
+        run.indiList = []
+
+    def test_list_upbirthday(self):
+        entry1 = {"id": "i01", "name": "John /Smith/", "birth": date(1990, (date.today()+relativedelta(days=10)).month, (date.today()+relativedelta(days=10)).day), "sex": "M"}
+        entry2 = {"id": "i02", "name": "Deci /Smith/", "birth": date(1990, 11, 30), "sex": "M",  "death": date(1991, 11, 29)}
+        entry3 = {"id": "i03", "name": "Connor /Thompson/", "birth": date(1939, 2, 23), "sex": "M", "fams": ["f01"]}
+        entry4 = {"id": "i04", "name": "Wendy /Anderson/", "birth": date(1950, 9, 23), "sex": "F"}
+        entry5 = {"id": "i05", "name": "Danielle /Jones/", "birth": date(1990, (date.today()+relativedelta(months=1)).month, (date.today()+relativedelta(months=1)).day), "sex": "F"}
+        with captured_output() as (out, err):
+            run.add_entry(entry1, "INDI")
+            run.add_entry(entry2, "INDI")
+            run.add_entry(entry3, "INDI")
+            run.add_entry(entry4, "INDI")
+            run.add_entry(entry5, "INDI")
+            run.US38_list_upcoming_birthdays()
+        output = out.getvalue().strip()
+        self.assertEquals("(US38) List of all living people with birthdays in the next 30 days: i01 John /Smith/, i05 Danielle /Jones/", output)
+
+# List upcoming anniversaries
+class US39Test(unittest.TestCase):
+    def setUp(self):
+        run.indiList = []
+        run.famList = []
+
+    def test_list_upanniversary(self):
+        husb_entry = {"id": "i01", "name": "John /Smith/", "birth": date(1960, 5, 20), "fams": ["f01"], "sex": "M"}
+        wife_entry = {"id": "i02", "name": "Wendy /Smith/", "birth": date(1962, 6, 10), "fams": ["f01"], "sex": "F"}
+        fam_entry = {"id": "f01", "husb": "i01", "wife": "i02", "marr": date(1990, (date.today()+relativedelta(days=10)).month, (date.today()+relativedelta(days=10)).day)}
+        husb_entry2 = {"id": "i03", "name": "Dendy /Aren/", "birth": date(1960, 5, 20), "fams": ["f02"], "sex": "M"}
+        wife_entry2 = {"id": "i04", "name": "Io /Aren/", "birth": date(1962, 6, 10), "fams": ["f02"], "sex": "F"}
+        fam_entry2 = {"id": "f02", "husb": "i03", "wife": "i04", "marr": date(1990, (date.today()+relativedelta(months=1)).month, (date.today()+relativedelta(months=1)).day)}
+        husb_entry3 = {"id": "i05", "name": "Dendy /Aren/", "birth": date(1960, 5, 20), "fams": ["f03"], "sex": "M", "death": date(1991, 11, 29)}
+        wife_entry3 = {"id": "i06", "name": "Io /Aren/", "birth": date(1962, 6, 10), "fams": ["f03"], "sex": "F"}
+        fam_entry3 = {"id": "f03", "husb": "i05", "wife": "i06", "marr": date(1990, (date.today()+relativedelta(days=10)).month, (date.today()+relativedelta(days=10)).day)}
+        with captured_output() as (out, err):
+            run.add_entry(husb_entry, "INDI")
+            run.add_entry(wife_entry, "INDI")
+            run.add_entry(fam_entry, "FAM")
+            run.add_entry(husb_entry2, "INDI")
+            run.add_entry(wife_entry2, "INDI")
+            run.add_entry(fam_entry2, "FAM")
+            run.add_entry(husb_entry3, "INDI")
+            run.add_entry(wife_entry3, "INDI")
+            run.add_entry(fam_entry3, "FAM")
+            run.US39_list_upcoming_anniversaries()
+        output = out.getvalue().strip()
+        self.assertEquals("(US39) List of all living couples with anniversaries in the next 30 days: i01 John /Smith/ and i02 Wendy /Smith/, i03 Dendy /Aren/ and i04 Io /Aren/", output)
+
+
 # Correct gender for role
 class US21Test(unittest.TestCase):
     def setUp(self):

@@ -99,6 +99,8 @@ def main(fname):
         US33_print_list_orphans()
         us23_unique_name_birth()
         us25_unique_name_birth_in_fam()
+        US38_list_upcoming_birthdays()
+        US39_list_upcoming_anniversaries()
             
         print_indi_table()
         print_fam_table()
@@ -343,6 +345,22 @@ def US36_list_recent_deaths():
     else:
         print "(US36) There are no people who died in the last 30 days"
 
+def US38_list_upcoming_birthdays():
+    list_upcoming_bds = get_list('upBds')
+    if list_upcoming_bds:
+        print "(US38) List of all living people with birthdays in the next 30 days: " + ', '.join(list_upcoming_bds)
+    else:
+        print "(US38) There are no living people with birthdays in the next 30 days"
+
+def US39_list_upcoming_anniversaries():
+    list_upcoming_ann = get_list('upAnn')
+    if list_upcoming_ann:
+        it = iter(list_upcoming_ann)
+        couples_list = zip(it, it)
+        print "(US39) List of all living couples with anniversaries in the next 30 days: " + ', '.join('{} and {}'.format(*e) for e in couples_list)
+    else:
+        print "(US39) There are no living couples with anniversaries in the next 30 days"
+
 def get_list(type):
     list_of_people = []
     if type == 'single':
@@ -375,6 +393,24 @@ def get_list(type):
                 if 0 <= (datetime.today() - dateToDateTime(indi.get("death"))).days <= 30:
                     id_and_name = indi.get("id") + " " + indi.get("name")
                     list_of_people.append(id_and_name)
+    elif type == 'upBds':
+        for indi in indiList:
+            if indi.get("death") is None:
+                today = datetime.today()
+                if 0 <= (datetime(today.year, indi.get("birth").month, indi.get("birth").day) - today).days <= 30:
+                    id_and_name = indi.get("id") + " " + indi.get("name")
+                    list_of_people.append(id_and_name)
+    elif type == 'upAnn':
+        for fam in famList:
+            husb = get_indi(fam['husb'])
+            wife = get_indi(fam['wife'])
+            if husb.get("death") is None and wife.get("death") is None and fam.get("div") is None:
+                today = datetime.today()
+                if 0 <= (datetime(today.year, fam.get("marr").month, fam.get("marr").day) - today).days <= 30:
+                    id_name_husb = husb.get("id") + " " + husb.get("name")
+                    id_name_wife = wife.get("id") + " " + wife.get("name")
+                    list_of_people.append(id_name_husb)
+                    list_of_people.append(id_name_wife)
     return list_of_people
 
 def get_indi(id):
