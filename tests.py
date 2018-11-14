@@ -653,4 +653,46 @@ class US25Test(unittest.TestCase):
         output = out.getvalue().strip()
         self.assertEquals("US25 Error: In FAM f01, children i02, i03 have the same name and birth of Connor /Thompson/ and 23 Feb 1939", output)
 
+
+class US06Test(unittest.TestCase):
+    def setUp(self):
+        run.indiList = []
+        run.famList = []
+
+    def testDeathBeforeMarr(self):
+        husb = {"line": 4, "id": "i03", "name":"test", "birth": date(1980,5,20), "death": date(2018,3,4), "fams": ["f02"], "sex": "M"}
+        wif = {"line": 5, "id": "i04", "name":"test", "birth": date(1982,6,10), "death": date(2010,3,4), "fams": ["f02"], "sex": "F"}
+        fam = {"line": 6, "id": "f02", "husb": "i03", "wife": "i04", "marr": date(2000,6,20), "div": date(2017,3,4)}
+        with captured_output() as (out,err):
+            run.add_entry(husb, "INDI")
+            run.add_entry(wif, "INDI")
+            run.add_entry(fam, "FAM")
+        output = out.getvalue().strip()
+        self.assertTrue("[Line 6] US06 Error: FAM f02 has divorce after death date of a spouses" in output)
+
+
+class US28Test(unittest.TestCase):
+    def setUp(self):
+        run.indiList = []
+        run.famList = []
+
+    def testOrdList(self):
+        h = {"line": 4, "id": "i03", "name":"test1", "birth": date(1990,5,20), "fams": ["f02"], "sex": "M"}
+        w = {"line": 4, "id": "i04", "name":"test1", "birth": date(1990,5,20), "fams": ["f02"], "sex": "M"}
+        a = {"line": 4, "id": "i06", "name":"test1", "birth": date(1990,5,20), "fams": ["f02"], "sex": "M"}
+        b = {"line": 5, "id": "i07", "name":"test2", "birth": date(1980,6,10), "fams": ["f02"], "sex": "F"}
+        c = {"line": 5, "id": "i08", "name":"test3", "birth": date(1970,6,10), "fams": ["f02"], "sex": "F"}
+        fam = {"line": 6, "id": "f02", "husb": "i03", "wife": "i04", "marr": date(2000,6,20),"children": ["i06","i07","i08"], "div": date(2017,3,4)}
+        with captured_output() as (out,err):
+            run.add_entry(h, "INDI")
+            run.add_entry(w, "INDI")
+            run.add_entry(a, "INDI")
+            run.add_entry(b, "INDI")
+            run.add_entry(c, "INDI")
+            run.add_entry(fam, "FAM")
+            run.print_fam_table()
+        output = out.getvalue().strip()
+        self.assertTrue("['i08', 'i07', 'i06']" in output)
+
+
 unittest.main()
